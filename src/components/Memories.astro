@@ -9,6 +9,22 @@ import { hasPhoto } from '../data/images';
  */
 const photos = memoryPhotos.filter((p) => hasPhoto(p.image));
 const show = photos.length > 0 || reviews.length > 0;
+
+/**
+ * На телефоне сетка в две колонки. Снимок, оставшийся в ряду один (перед широким
+ * кадром или в конце), растягиваем на обе колонки, чтобы не было дыры.
+ */
+const solo = new Set<number>();
+let col = 0;
+photos.forEach((p, i) => {
+  if (p.wide) {
+    if (col === 1) solo.add(i - 1);
+    col = 0;
+  } else {
+    col = (col + 1) % 2;
+  }
+});
+if (col === 1) solo.add(photos.length - 1);
 ---
 
 {
@@ -22,9 +38,18 @@ const show = photos.length > 0 || reviews.length > 0;
 
         {photos.length > 0 && (
           <ul class="memories__grid">
-            {photos.map((p) => (
-              <li class:list={['memories__item', 'reveal', p.wide && 'memories__item--wide']}>
-                <Photo src={p.image} alt={p.alt} ratio={p.wide ? '21 / 9' : '4 / 5'} sizes={p.wide ? '100vw' : '(min-width: 64rem) 30vw, 92vw'} />
+            {photos.map((p, i) => (
+              <li class:list={['memories__item', 'reveal', p.wide && 'memories__item--wide', solo.has(i) && 'memories__item--solo']} style={`--delay:${(i % 3) * 0.08}s`}>
+                <button class="memories__zoom" type="button" data-lightbox={p.image} data-lightbox-alt={p.alt} aria-label={`Открыть фото крупно: ${p.alt}`}>
+                  <Photo
+                    src={p.image}
+                    alt={p.alt}
+                    class="memories__photo"
+                    focus={p.focus}
+                    sizes={p.wide ? '(min-width: 82rem) 76rem, 94vw' : solo.has(i) ? '(min-width: 48rem) 30vw, 94vw' : '(min-width: 48rem) 30vw, 47vw'}
+                    widths={p.wide ? [800, 1200, 1600] : [360, 560, 800, 1100]}
+                  />
+                </button>
               </li>
             ))}
           </ul>
@@ -68,7 +93,39 @@ const show = photos.length > 0 || reviews.length > 0;
 
   .memories__grid {
     display: grid;
-    gap: 0.6rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+
+  .memories__item--wide,
+  .memories__item--solo {
+    grid-column: 1 / -1;
+  }
+
+  .memories__zoom {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: zoom-in;
+  }
+
+  .memories__zoom :global(img) {
+    transition: opacity 0.2s ease;
+  }
+
+  .memories__zoom:hover :global(img) {
+    opacity: 0.88;
+  }
+
+  .memories__item :global(.memories__photo) {
+    aspect-ratio: 4 / 5;
+  }
+
+  .memories__item--wide :global(.memories__photo),
+  .memories__item--solo :global(.memories__photo) {
+    aspect-ratio: 3 / 2;
   }
 
   .reviews {
@@ -113,10 +170,19 @@ const show = photos.length > 0 || reviews.length > 0;
   @media (min-width: 48rem) {
     .memories__grid {
       grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.6rem;
     }
 
-    .memories__item--wide {
-      grid-column: 1 / -1;
+    .memories__item--solo {
+      grid-column: auto;
+    }
+
+    .memories__item--solo :global(.memories__photo) {
+      aspect-ratio: 4 / 5;
+    }
+
+    .memories__item--wide :global(.memories__photo) {
+      aspect-ratio: 21 / 9;
     }
 
     .reviews {
