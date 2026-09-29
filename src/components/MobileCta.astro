@@ -1,0 +1,50 @@
+---
+/** Липкая кнопка на телефоне: появляется после первого экрана и прячется у формы. */
+---
+
+<div class="mobile-cta" data-mobile-cta hidden>
+  <a class="btn btn--wide" href="#zayavka" data-analytics="hero_cta_click">Хочу поехать</a>
+</div>
+
+<style>
+  .mobile-cta {
+    position: fixed;
+    inset: auto 0 0;
+    z-index: 40;
+    padding: 0.6rem var(--gutter) calc(0.6rem + env(safe-area-inset-bottom));
+    background: rgb(17 16 16 / 0.96);
+    border-top: 1px solid var(--line-on-ink);
+    transform: translateY(110%);
+    transition: transform 0.3s var(--ease);
+  }
+
+  .mobile-cta.is-shown {
+    transform: none;
+  }
+
+  @media (min-width: 64rem) {
+    .mobile-cta {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  const bar = document.querySelector<HTMLElement>('[data-mobile-cta]');
+  const hero = document.querySelector<HTMLElement>('[data-hero]');
+  const form = document.querySelector<HTMLElement>('#zayavka');
+  if (bar && hero && form && 'IntersectionObserver' in window) {
+    bar.hidden = false;
+    let heroVisible = true;
+    let formVisible = false;
+    const update = () => bar.classList.toggle('is-shown', !heroVisible && !formVisible);
+    new IntersectionObserver(([e]) => {
+      heroVisible = e.isIntersecting;
+      update();
+    }).observe(hero);
+    new IntersectionObserver(([e]) => {
+      formVisible = e.isIntersecting;
+      update();
+    }).observe(form);
+  }
+</script>

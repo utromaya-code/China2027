@@ -1,0 +1,306 @@
+---
+import { manifesto } from '../data/trip';
+import { days } from '../data/days';
+
+/**
+ * Профиль высот: главная высота каждого дня. Один ряд — легенда не нужна,
+ * заголовок говорит, что нарисовано. Подписаны только старт, первая ночь
+ * на нагорье, максимум и финиш; остальное — во всплывающих подсказках
+ * и в таблице для скринридеров.
+ *
+ * Рисуется дважды — для широкого экрана и для телефона: иначе на 375 px
+ * подписи в общем viewBox уменьшились бы до нечитаемых.
+ */
+
+const fmt = (n: number) => n.toLocaleString('ru-RU').replace(/ /g, ' ');
+const Y_MAX = 5000;
+
+interface Variant {
+  id: string;
+  w: number;
+  h: number;
+  pad: { l: number; r: number; t: number; b: number };
+  font: number;
+  labelled: number[];
+}
+
+const variants: Variant[] = [
+  { id: 'wide', w: 720, h: 330, pad: { l: 56, r: 30, t: 44, b: 50 }, font: 13, labelled: [1, 6, 10, 11] },
+  { id: 'narrow', w: 360, h: 330, pad: { l: 44, r: 14, t: 40, b: 44 }, font: 12, labelled: [1, 10] },
+];
+
+function build(v: Variant) {
+  const plotW = v.w - v.pad.l - v.pad.r;
+  const plotH = v.h - v.pad.t - v.pad.b;
+  const x = (i: number) => v.pad.l + (plotW * i) / (days.length - 1);
+  const y = (alt: number) => v.pad.t + plotH * (1 - alt / Y_MAX);
+  const pts = days.map((d, i) => ({ d, cx: x(i), cy: y(d.altitude) }));
+  const line = pts.map((p, i) => `${i ? 'L' : 'M'}${p.cx.toFixed(1)} ${p.cy.toFixed(1)}`).join('');
+  const base = y(0);
+  const area = `${line}L${pts.at(-1)!.cx.toFixed(1)} ${base}L${pts[0].cx.toFixed(1)} ${base}Z`;
+  const ticks = [0, 1000, 2000, 3000, 4000, 5000].map((t) => ({ t, y: y(t) }));
+  // Подъём к леднику — по желанию: этот отрезок пунктиром.
+  const optional = days.findIndex((d) => d.n === 10);
+  const solid = pts.slice(0, optional).map((p, i) => `${i ? 'L' : 'M'}${p.cx.toFixed(1)} ${p.cy.toFixed(1)}`).join('');
+  const dashed = `M${pts[optional - 1].cx.toFixed(1)} ${pts[optional - 1].cy.toFixed(1)}L${pts[optional].cx.toFixed(1)} ${pts[optional].cy.toFixed(1)}L${pts[optional + 1].cx.toFixed(1)} ${pts[optional + 1].cy.toFixed(1)}`;
+  return { ...v, plotW, plotH, pts, area, solid, dashed, ticks, base, line };
+}
+
+const charts = variants.map(build);
+
+const placeFor = (d: (typeof days)[number]) => d.altitudeLabel ?? d.place;
+---
+
+<section class="manifesto section section--ink" aria-labelledby="manifesto-title">
+  <div class="wrap manifesto__grid">
+    <div class="manifesto__text">
+      <h2 class="h2 reveal" id="manifesto-title">{manifesto.title}</h2>
+      <p class="lead reveal manifesto__lead">{manifesto.lead}</p>
+    </div>
+
+    <figure class="altitude reveal" aria-labelledby="altitude-caption">
+      <figcaption id="altitude-caption" class="altitude__caption">
+        Главная высота каждого дня, метров над уровнем моря
+      </figcaption>
+
+      {
+        charts.map((c) => (
+          <svg
+            class:list={['altitude__svg', `altitude__svg--${c.id}`]}
+            viewBox={`0 0 ${c.w} ${c.h}`}
+            role="img"
+            aria-label="Профиль высот маршрута: от 20 метров в Гуанчжоу до 4 506 метров у ледника Юйлун"
+            style={`--fs:${c.font}px`}
+          >
+            <g class="altitude__grid" aria-hidden="true">
+              {c.ticks.map((t) => (
+                <g>
+                  <line x1={c.pad.l} x2={c.w - c.pad.r} y1={t.y} y2={t.y} />
+                  <text x={c.pad.l - 10} y={t.y + c.font * 0.35} text-anchor="end">
+                    {t.t === 0 ? '0' : fmt(t.t)}
+                  </text>
+                </g>
+              ))}
+            </g>
+
+            <g class="altitude__days" aria-hidden="true">
+              {c.pts.map((p) => (
+                <text x={p.cx} y={c.base + c.font * 1.8} text-anchor="middle">
+                  {p.d.n}
+                </text>
+              ))}
+              <text class="altitude__axis-name" x={c.w - c.pad.r} y={c.base + c.font * 3.1} text-anchor="end">
+                день
+              </text>
+            </g>
+
+            <path class="altitude__area" d={c.area} />
+            <path class="altitude__line" d={c.solid} pathLength="1" />
+            <path class="altitude__line altitude__line--optional" d={c.dashed} />
+
+            {c.pts.map((p) => {
+              const labelled = c.labelled.includes(p.d.n);
+              const above = p.cy > c.pad.t + 40;
+              const anchor = p.d.n === 1 ? 'start' : p.cx > c.w * 0.72 ? 'end' : 'middle';
+              const tipW = c.id === 'wide' ? 196 : 170;
+              const tipX = Math.min(Math.max(p.cx - tipW / 2, 4), c.w - tipW - 4);
+              const tipY = above ? p.cy - 64 : p.cy + 16;
+              return (
+                <g class="altitude__pt" tabindex="0" aria-label={`День ${p.d.n}, ${p.d.dateHuman}: ${placeFor(p.d)}, ${fmt(p.d.altitude)} м`}>
+                  <circle class="altitude__hit" cx={p.cx} cy={p.cy} r="18" />
+                  <circle class="altitude__dot" cx={p.cx} cy={p.cy} r="5" />
+                  {labelled && (
+                    <text
+                      class="altitude__label"
+                      x={p.cx + (anchor === 'start' ? -4 : anchor === 'end' ? 4 : 0)}
+                      y={p.d.n === days.length ? p.cy + 26 : p.cy - 16}
+                      text-anchor={anchor}
+                    >
+                      <tspan class="altitude__value">{fmt(p.d.altitude)} м</tspan>
+                      <tspan dx="6">{placeFor(p.d)}</tspan>
+                    </text>
+                  )}
+                  <g class="altitude__tip" aria-hidden="true">
+                    <rect x={tipX} y={tipY} width={tipW} height="48" rx="2" />
+                    <text x={tipX + 12} y={tipY + 20}>
+                      День {p.d.n} · {p.d.dateHuman}
+                    </text>
+                    <text class="altitude__tip-strong" x={tipX + 12} y={tipY + 38}>
+                      {placeFor(p.d)} · {fmt(p.d.altitude)} м
+                    </text>
+                  </g>
+                </g>
+              );
+            })}
+          </svg>
+        ))
+      }
+
+      <table class="visually-hidden">
+        <caption>Высота по дням маршрута</caption>
+        <thead>
+          <tr><th scope="col">День</th><th scope="col">Место</th><th scope="col">Высота, м</th></tr>
+        </thead>
+        <tbody>
+          {days.map((d) => (
+            <tr><td>{d.n}, {d.dateHuman}</td><td>{placeFor(d)}</td><td>{d.altitude}</td></tr>
+          ))}
+        </tbody>
+      </table>
+
+      <p class="altitude__note">{manifesto.note}</p>
+    </figure>
+  </div>
+</section>
+
+<style>
+  .manifesto__grid {
+    display: grid;
+    gap: var(--space-l);
+  }
+
+  .manifesto__lead {
+    margin-top: var(--space-m);
+    color: #ddd6ca;
+    max-width: 46ch;
+  }
+
+  .altitude {
+    margin: 0;
+  }
+
+  .altitude__caption {
+    font-size: var(--step--1);
+    color: var(--on-ink-mute);
+    margin-bottom: 0.6rem;
+  }
+
+  .altitude__svg {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+    font-family: var(--font-text);
+    font-size: var(--fs);
+  }
+
+  .altitude__svg--wide {
+    display: none;
+  }
+
+  .altitude__grid line {
+    stroke: var(--line-on-ink);
+    stroke-width: 1;
+  }
+
+  .altitude__grid text,
+  .altitude__days text {
+    fill: var(--on-ink-mute);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .altitude__axis-name {
+    font-size: 0.85em;
+  }
+
+  .altitude__area {
+    fill: var(--cinnabar-light);
+    fill-opacity: 0.1;
+  }
+
+  .altitude__line {
+    fill: none;
+    stroke: var(--cinnabar-light);
+    stroke-width: 2;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+  }
+
+  .altitude__line--optional {
+    stroke-dasharray: 6 6;
+  }
+
+  /* Линия прорисовывается, когда график появляется на экране. */
+  .reveal .altitude__line:not(.altitude__line--optional) {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    transition: stroke-dashoffset 2.2s 0.2s var(--ease);
+  }
+
+  .reveal.is-visible .altitude__line:not(.altitude__line--optional) {
+    stroke-dashoffset: 0;
+  }
+
+  .altitude__dot {
+    fill: var(--cinnabar-light);
+    stroke: var(--ink);
+    stroke-width: 2;
+  }
+
+  .altitude__hit {
+    fill: transparent;
+  }
+
+  .altitude__pt {
+    cursor: default;
+    outline: none;
+  }
+
+  .altitude__pt:focus-visible .altitude__dot {
+    stroke: var(--on-ink);
+  }
+
+  .altitude__label {
+    fill: var(--on-ink);
+  }
+
+  .altitude__value {
+    font-weight: 600;
+  }
+
+  .altitude__tip {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+  }
+
+  .altitude__tip rect {
+    fill: var(--paper);
+  }
+
+  .altitude__tip text {
+    fill: var(--on-paper-mute);
+  }
+
+  .altitude__tip .altitude__tip-strong {
+    fill: var(--on-paper);
+    font-weight: 600;
+  }
+
+  .altitude__pt:hover .altitude__tip,
+  .altitude__pt:focus-visible .altitude__tip {
+    opacity: 1;
+  }
+
+  .altitude__note {
+    margin-top: 0.8rem;
+    font-size: var(--step--1);
+    color: var(--on-ink-mute);
+  }
+
+  @media (min-width: 44rem) {
+    .altitude__svg--wide {
+      display: block;
+    }
+
+    .altitude__svg--narrow {
+      display: none;
+    }
+  }
+
+  @media (min-width: 70rem) {
+    .manifesto__grid {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      align-items: end;
+    }
+  }
+</style>

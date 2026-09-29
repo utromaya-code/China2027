@@ -1,0 +1,128 @@
+---
+import { practical } from '../data/practical';
+---
+
+<section class="practical section section--paper" id="prakticheskoe" aria-labelledby="practical-title">
+  <div class="wrap">
+    <header class="practical__head">
+      <h2 class="h2 reveal" id="practical-title">{practical.title}</h2>
+      <p class="lead practical__lead reveal">{practical.lead}</p>
+    </header>
+
+    <ul class="climate">
+      {
+        practical.weather.map((w, i) => (
+          <li class="climate__item reveal" style={`--delay:${i * 0.1}s`}>
+            <p class="climate__region">{w.region}</p>
+            <p class="climate__days">{w.days}</p>
+            <p class="climate__temp">{w.temp}</p>
+            <p class="climate__text">{w.text}</p>
+          </li>
+        ))
+      }
+    </ul>
+
+    <dl class="facts">
+      {
+        practical.facts.map((f) => (
+          <div class="facts__row reveal">
+            <dt class="facts__term">{f.title}</dt>
+            <dd class="facts__def">{f.text}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </div>
+</section>
+
+<style>
+  .practical__head {
+    display: grid;
+    gap: var(--space-m);
+    margin-bottom: var(--space-xl);
+  }
+
+  .practical__lead {
+    color: var(--on-paper-mute);
+  }
+
+  .climate {
+    display: grid;
+    border-top: 1px solid var(--line-on-paper);
+  }
+
+  .climate__item {
+    padding-block: var(--space-l);
+    border-bottom: 1px solid var(--line-on-paper);
+  }
+
+  .climate__region {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    line-height: 1.1;
+  }
+
+  .climate__days {
+    margin-top: 0.3rem;
+    font-size: var(--step--1);
+    color: var(--on-paper-mute);
+  }
+
+  .climate__temp {
+    margin-top: var(--space-m);
+    font-size: var(--step-1);
+    font-weight: 600;
+    color: var(--cinnabar-deep);
+  }
+
+  .climate__text {
+    margin-top: 0.4rem;
+    max-width: 34ch;
+    color: var(--on-paper-mute);
+  }
+
+  .facts {
+    display: grid;
+    gap: var(--space-l);
+    margin: var(--space-xl) 0 0;
+  }
+
+  .facts__term {
+    font-weight: 600;
+  }
+
+  .facts__def {
+    margin: 0.4rem 0 0;
+    max-width: 60ch;
+    color: var(--on-paper-mute);
+  }
+
+  @media (min-width: 48rem) {
+    .climate {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      border-bottom: 1px solid var(--line-on-paper);
+    }
+
+    .climate__item {
+      padding-inline: 0 var(--space-l);
+      border-bottom: 0;
+    }
+
+    .climate__item + .climate__item {
+      padding-left: var(--space-l);
+      border-left: 1px solid var(--line-on-paper);
+    }
+
+    .facts {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-l) var(--space-xl);
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .practical__head {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      align-items: end;
+    }
+  }
+</style>

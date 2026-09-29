@@ -1,0 +1,53 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Страница не найдена — Китай: путь в Шангри-Ла" description="Такой страницы нет." noindex>
+  <main id="main" class="section section--ink notfound">
+    <div class="wrap notfound__inner">
+      <span class="brush notfound__glyph" aria-hidden="true">迷</span>
+      <div>
+        <h1 class="h2">Похоже, вы свернули с тропы</h1>
+        <p class="lead notfound__lead">
+          Знак 迷 значит «заблудиться» — и «быть очарованным». Первое поправимо.
+        </p>
+        <a class="btn notfound__btn" href={import.meta.env.BASE_URL}>Вернуться на маршрут</a>
+      </div>
+    </div>
+  </main>
+</Base>
+
+<style>
+  .notfound {
+    min-height: 100vh;
+    display: grid;
+    align-items: center;
+  }
+
+  .notfound__inner {
+    display: grid;
+    gap: var(--space-l);
+    align-items: center;
+  }
+
+  .notfound__glyph {
+    font-size: clamp(8rem, 5rem + 14vw, 16rem);
+    color: var(--cinnabar);
+  }
+
+  .notfound__lead {
+    margin-top: var(--space-m);
+    color: var(--on-ink-mute);
+  }
+
+  .notfound__btn {
+    margin-top: var(--space-l);
+  }
+
+  @media (min-width: 48rem) {
+    .notfound__inner {
+      grid-template-columns: auto 1fr;
+      gap: var(--space-xl);
+    }
+  }
+</style>

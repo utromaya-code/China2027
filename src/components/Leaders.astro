@@ -1,0 +1,79 @@
+---
+import Photo from './Photo.astro';
+import { leaders, leadersSection } from '../data/leaders';
+---
+
+<section class="leaders section section--ink" id="komanda" aria-labelledby="leaders-title">
+  <div class="wrap">
+    <header class="leaders__head">
+      <h2 class="h2 reveal" id="leaders-title">{leadersSection.title}</h2>
+      <p class="lead leaders__lead reveal">{leadersSection.lead}</p>
+    </header>
+
+    <ul class="leaders__list">
+      {
+        leaders.map((l, i) => (
+          <li class="leader reveal" style={`--delay:${i * 0.1}s`}>
+            <Photo src={l.portrait} alt={`${l.name}, портрет`} ratio="4 / 5" sizes="(min-width: 64rem) 30vw, (min-width: 40rem) 45vw, 92vw" widths={[400, 640, 900]} focus="50% 30%" />
+            <p class="leader__role">{l.role}</p>
+            <h3 class="h4 leader__name">{l.name}</h3>
+            <p class="leader__bio">{l.bio}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .leaders__head {
+    display: grid;
+    gap: var(--space-m);
+    margin-bottom: var(--space-xl);
+  }
+
+  .leaders__lead {
+    color: #ddd6ca;
+  }
+
+  .leaders__list {
+    display: grid;
+    gap: var(--space-xl) var(--space-l);
+  }
+
+  .leader__role {
+    margin-top: var(--space-m);
+    font-size: var(--step--1);
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--cinnabar-light);
+  }
+
+  .leader__name {
+    margin-top: 0.35rem;
+  }
+
+  .leader__bio {
+    margin-top: 0.7rem;
+    color: var(--on-ink-mute);
+    text-wrap: pretty;
+  }
+
+  @media (min-width: 40rem) {
+    .leaders__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .leaders__head {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      align-items: end;
+    }
+
+    .leaders__list {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+</style>

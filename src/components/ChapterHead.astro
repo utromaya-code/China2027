@@ -1,0 +1,57 @@
+---
+import { chapters, type ChapterId } from '../data/days';
+
+interface Props {
+  id: ChapterId;
+  /** id заголовка — для aria-labelledby секции. */
+  headingId: string;
+}
+
+const { id, headingId } = Astro.props;
+const c = chapters[id];
+---
+
+<header class="chapter">
+  <span class="chapter__glyph brush" aria-hidden="true">{c.hanzi}</span>
+  <div class="chapter__text">
+    <p class="label chapter__meta reveal">Глава {c.roman} · {c.days}</p>
+    <h2 class="h2 chapter__title reveal" id={headingId}>{c.title}</h2>
+    <p class="lead chapter__subtitle reveal">{c.subtitle}</p>
+  </div>
+  <p class="chapter__gloss" aria-hidden="true"><span class="hanzi">{c.hanzi}</span> — {c.hanziMeaning}</p>
+</header>
+
+<style>
+  .chapter {
+    position: relative;
+    display: grid;
+    gap: var(--space-m);
+    align-items: end;
+    padding-bottom: var(--space-xl);
+    margin-bottom: var(--space-xl);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .chapter__glyph {
+    font-size: clamp(7rem, 4rem + 14vw, 15rem);
+    color: var(--cinnabar);
+    line-height: 0.85;
+  }
+
+  .chapter__subtitle {
+    margin-top: 0.8rem;
+    color: var(--mute);
+  }
+
+  .chapter__gloss {
+    font-size: var(--step--1);
+    color: var(--mute);
+  }
+
+  @media (min-width: 48rem) {
+    .chapter {
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      gap: var(--space-l);
+    }
+  }
+</style>

@@ -1,0 +1,252 @@
+---
+import Photo from './Photo.astro';
+import { reasons, reasonsSection } from '../data/reasons';
+---
+
+<section class="reasons section section--paper" id="prichiny" aria-labelledby="reasons-title">
+  <div class="wrap">
+    <header class="reasons__head">
+      <h2 class="h2 reveal" id="reasons-title">{reasonsSection.title}</h2>
+      <p class="lead reasons__lead reveal">{reasonsSection.lead}</p>
+    </header>
+
+    <div class="reasons__layout">
+      {/* На широком экране слева «окно», в котором меняется кадр текущей причины. */}
+      <div class="reasons__stage" aria-hidden="true">
+        <div class="reasons__frame">
+          {
+            reasons.map((r, i) =>
+              r.seal ? (
+                <div class:list={['reasons__slide', 'reasons__slide--seal', i === 0 && 'is-active']} data-slide={i}>
+                  <div class="seal-big">
+                    <span class="seal-big__glyphs hanzi">{r.seal.hanzi}</span>
+                  </div>
+                  <p class="reasons__seal-caption">{r.seal.caption}</p>
+                </div>
+              ) : (
+                <div class:list={['reasons__slide', i === 0 && 'is-active']} data-slide={i}>
+                  <Photo src={r.image!} alt="" sizes="(min-width: 64rem) 75vw, 1px" widths={[800, 1200, 1600, 2400]} />
+                </div>
+              ),
+            )
+          }
+        </div>
+      </div>
+
+      <ol class="reasons__list">
+        {
+          reasons.map((r, i) => (
+            <li class="reason reveal" data-reason={i}>
+              <span class="reason__numeral hanzi" aria-hidden="true">{r.numeral}</span>
+              <div class="reason__body">
+                <h3 class="h4 reason__title">
+                  <span class="visually-hidden">{i + 1}. </span>
+                  {r.title}
+                </h3>
+                <p class="reason__text">{r.text}</p>
+                <div class="reason__media">
+                  {r.seal ? (
+                    <div class="seal-big seal-big--small" aria-hidden="true">
+                      <span class="seal-big__glyphs hanzi">{r.seal.hanzi}</span>
+                    </div>
+                  ) : (
+                    <Photo src={r.image!} alt={r.imageAlt ?? ''} ratio="16 / 10" sizes="(min-width: 64rem) 1px, 92vw" widths={[480, 800, 1200]} />
+                  )}
+                </div>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </div>
+</section>
+
+<style>
+  .reasons__head {
+    display: grid;
+    gap: var(--space-m);
+    margin-bottom: var(--space-xl);
+  }
+
+  .reasons__lead {
+    color: var(--on-paper-mute);
+  }
+
+  .reasons__layout {
+    display: grid;
+    gap: var(--space-l);
+  }
+
+  .reasons__stage {
+    display: none;
+  }
+
+  .reasons__list {
+    display: grid;
+    gap: var(--space-xl);
+    counter-reset: reason;
+  }
+
+  .reason {
+    display: grid;
+    grid-template-columns: 3.2rem minmax(0, 1fr);
+    gap: 0 var(--space-m);
+    align-items: start;
+  }
+
+  /* Номер — оттиск печати: белый знак на киновари с тонкой рамкой. */
+  .reason__numeral {
+    display: grid;
+    place-items: center;
+    width: 3.2rem;
+    height: 3.2rem;
+    background: var(--cinnabar);
+    color: #fff;
+    font-size: 1.5rem;
+    line-height: 1;
+    letter-spacing: 0;
+    box-shadow:
+      inset 0 0 0 3px var(--cinnabar),
+      inset 0 0 0 4px rgb(255 255 255 / 0.85);
+  }
+
+  .reason__title {
+    margin-bottom: 0.6rem;
+  }
+
+  .reason__text {
+    max-width: 52ch;
+    text-wrap: pretty;
+  }
+
+  .reason__media {
+    margin-top: var(--space-m);
+  }
+
+  /* Печать «免签» — сам визовый штамп вместо фотографии. */
+  .seal-big {
+    display: grid;
+    place-items: center;
+    width: min(100%, 22rem);
+    aspect-ratio: 1;
+    background: var(--cinnabar);
+    color: #fff;
+    border-radius: 3px;
+    box-shadow:
+      inset 0 0 0 10px var(--cinnabar),
+      inset 0 0 0 14px rgb(255 255 255 / 0.9);
+  }
+
+  .seal-big--small {
+    width: 9rem;
+    box-shadow:
+      inset 0 0 0 6px var(--cinnabar),
+      inset 0 0 0 8px rgb(255 255 255 / 0.9);
+  }
+
+  .seal-big__glyphs {
+    font-size: 7rem;
+    line-height: 1;
+    letter-spacing: 0;
+    writing-mode: vertical-rl;
+  }
+
+  .seal-big--small .seal-big__glyphs {
+    font-size: 2.9rem;
+  }
+
+  .reasons__seal-caption {
+    margin-top: 1rem;
+    font-size: var(--step--1);
+    color: var(--on-paper-mute);
+    text-align: center;
+  }
+
+  @media (min-width: 64rem) {
+    .reasons__head {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      align-items: end;
+    }
+
+    .reasons__layout {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+      gap: var(--space-xl);
+    }
+
+    .reasons__stage {
+      display: block;
+    }
+
+    .reasons__frame {
+      position: sticky;
+      top: 6rem;
+      aspect-ratio: 4 / 5;
+      max-height: calc(100vh - 8rem);
+    }
+
+    .reasons__slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 0.7s ease;
+    }
+
+    .reasons__slide.is-active {
+      opacity: 1;
+    }
+
+    .reasons__slide :global(.photo) {
+      height: 100%;
+    }
+
+    .reasons__slide--seal {
+      display: grid;
+      place-content: center;
+      justify-items: center;
+      background: var(--paper-2);
+    }
+
+    .reason__media {
+      display: none;
+    }
+
+    .reasons__list {
+      gap: 0;
+    }
+
+    .reason {
+      min-height: 46vh;
+      align-content: center;
+      grid-template-columns: 5rem minmax(0, 1fr);
+      padding-block: var(--space-l);
+      border-top: 1px solid var(--line-on-paper);
+    }
+
+    .reason:first-child {
+      border-top: 0;
+    }
+
+    .reason__numeral {
+      width: 3.8rem;
+      height: 3.8rem;
+      font-size: 1.8rem;
+    }
+  }
+</style>
+
+<script>
+  const slides = Array.from(document.querySelectorAll<HTMLElement>('.reasons__slide'));
+  const items = Array.from(document.querySelectorAll<HTMLElement>('[data-reason]'));
+  if (slides.length && items.length && 'IntersectionObserver' in window) {
+    const activate = (i: number) =>
+      slides.forEach((s) => s.classList.toggle('is-active', Number(s.dataset.slide) === i));
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) if (e.isIntersecting) activate(Number((e.target as HTMLElement).dataset.reason));
+      },
+      { rootMargin: '-45% 0px -45% 0px' },
+    );
+    items.forEach((el) => io.observe(el));
+  }
+</script>

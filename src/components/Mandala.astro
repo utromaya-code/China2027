@@ -1,0 +1,71 @@
+---
+/**
+ * Мандала — схема тибетской мандалы: внешние круги, «дворец» с четырьмя
+ * воротами на стороны света и восьмилепестковый лотос в центре.
+ * Рисуется построением, а не от руки, поэтому линии точные.
+ */
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+
+const C = 500;
+const r = (n: number) => Math.round(n * 100) / 100;
+
+// Лотос: восемь лепестков вокруг центра.
+const petals = Array.from({ length: 8 }, (_, i) => {
+  const a = (i * Math.PI) / 4;
+  const tip = [C + Math.cos(a) * 150, C + Math.sin(a) * 150];
+  const left = [C + Math.cos(a - 0.42) * 62, C + Math.sin(a - 0.42) * 62];
+  const right = [C + Math.cos(a + 0.42) * 62, C + Math.sin(a + 0.42) * 62];
+  const cl = [C + Math.cos(a - 0.2) * 150, C + Math.sin(a - 0.2) * 150];
+  const cr = [C + Math.cos(a + 0.2) * 150, C + Math.sin(a + 0.2) * 150];
+  return `M${r(left[0])} ${r(left[1])}Q${r(cl[0])} ${r(cl[1])} ${r(tip[0])} ${r(tip[1])}Q${r(cr[0])} ${r(cr[1])} ${r(right[0])} ${r(right[1])}`;
+});
+
+// Дворец: квадрат с воротами-выступами посередине каждой стороны.
+const S = 250;
+const g = 46;
+const d = 26;
+const palace = [
+  `M${C - S} ${C - S}`,
+  `H${C - g}V${C - S - d}H${C + g}V${C - S}`,
+  `H${C + S}V${C - g}H${C + S + d}V${C + g}H${C + S}`,
+  `V${C + S}H${C + g}V${C + S + d}H${C - g}V${C + S}`,
+  `H${C - S}V${C + g}H${C - S - d}V${C - g}H${C - S}Z`,
+].join('');
+
+const rays = Array.from({ length: 32 }, (_, i) => {
+  const a = (i * Math.PI) / 16;
+  return `M${r(C + Math.cos(a) * 395)} ${r(C + Math.sin(a) * 395)}L${r(C + Math.cos(a) * 430)} ${r(C + Math.sin(a) * 430)}`;
+}).join('');
+
+const beads = Array.from({ length: 24 }, (_, i) => {
+  const a = (i * Math.PI) / 12;
+  return { cx: r(C + Math.cos(a) * 362), cy: r(C + Math.sin(a) * 362) };
+});
+---
+
+<svg class:list={['mandala', className]} viewBox="0 0 1000 1000" aria-hidden="true" focusable="false">
+  <g fill="none" stroke="currentColor" stroke-width="1.2">
+    <circle cx={C} cy={C} r="480" />
+    <circle cx={C} cy={C} r="458" stroke-dasharray="2 10" />
+    <circle cx={C} cy={C} r="435" />
+    <path d={rays} />
+    <circle cx={C} cy={C} r="392" />
+    {beads.map((b) => <circle cx={b.cx} cy={b.cy} r="9" />)}
+    <circle cx={C} cy={C} r="330" />
+    <path d={palace} />
+    <circle cx={C} cy={C} r="212" />
+    {petals.map((p) => <path d={p} />)}
+    <circle cx={C} cy={C} r="62" />
+    <circle cx={C} cy={C} r="18" />
+  </g>
+</svg>
+
+<style>
+  .mandala {
+    color: var(--gold);
+  }
+</style>

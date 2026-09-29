@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://utromaya-code.github.io/China2027/sitemap-index.xml

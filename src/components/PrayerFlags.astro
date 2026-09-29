@@ -1,0 +1,89 @@
+---
+/**
+ * Нитка молитвенных флагов лунгта. Цвета идут в каноническом порядке:
+ * синий — небо, белый — ветер, красный — огонь, зелёный — вода, жёлтый — земля.
+ * Флагов с запасом: лишние уходят за край экрана, размер флага не зависит
+ * от ширины окна. Флаги качаются на ветру; при prefers-reduced-motion — висят.
+ */
+interface Props {
+  count?: number;
+}
+
+const { count = 64 } = Astro.props;
+const colors = ['blue', 'white', 'red', 'green', 'yellow'] as const;
+const flags = Array.from({ length: count }, (_, i) => ({
+  color: colors[i % colors.length],
+  delay: ((i * 37) % 29) / 10,
+}));
+---
+
+<div class="flags" aria-hidden="true">
+  <ul class="flags__row">
+    {flags.map((f) => <li class:list={['flags__flag', `flags__flag--${f.color}`]} style={`animation-delay:-${f.delay}s`} />)}
+  </ul>
+</div>
+
+<style>
+  .flags {
+    position: relative;
+    overflow: hidden;
+    height: 3.2rem;
+  }
+
+  /* Нитка */
+  .flags::before {
+    content: '';
+    position: absolute;
+    inset: 0.3rem 0 auto;
+    height: 1px;
+    background: rgb(242 238 230 / 0.4);
+  }
+
+  /* Ряд шире экрана и отцентрован: обрезаются оба края поровну. */
+  .flags__row {
+    position: relative;
+    left: 50%;
+    display: flex;
+    gap: 0.55rem;
+    width: max-content;
+    padding-top: 0.3rem;
+    transform: translateX(-50%);
+  }
+
+  .flags__flag {
+    flex: none;
+    width: 1.6rem;
+    height: 2.1rem;
+    transform-origin: 50% 0;
+    animation: flutter 3.6s ease-in-out infinite alternate;
+  }
+
+  .flags__flag--blue {
+    background: var(--flag-blue);
+  }
+
+  .flags__flag--white {
+    background: var(--flag-white);
+  }
+
+  .flags__flag--red {
+    background: var(--flag-red);
+  }
+
+  .flags__flag--green {
+    background: var(--flag-green);
+  }
+
+  .flags__flag--yellow {
+    background: var(--flag-yellow);
+  }
+
+  @keyframes flutter {
+    from {
+      transform: skewX(-6deg) rotate(-2.5deg);
+    }
+    to {
+      transform: skewX(5deg) rotate(2.5deg);
+    }
+  }
+</style>

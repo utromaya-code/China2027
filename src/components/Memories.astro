@@ -1,0 +1,126 @@
+---
+import Photo from './Photo.astro';
+import { memoriesSection, memoryPhotos, reviews } from '../data/memories';
+import { hasPhoto } from '../data/images';
+
+/**
+ * «Как это было»: фото и отзывы с прошлой поездки в Китай.
+ * Выводится, только когда организатор передал материалы — см. memories.ts.
+ */
+const photos = memoryPhotos.filter((p) => hasPhoto(p.image));
+const show = photos.length > 0 || reviews.length > 0;
+---
+
+{
+  show && (
+    <section class="memories section section--ink" id="kak-eto-bylo" aria-labelledby="memories-title">
+      <div class="wrap">
+        <header class="memories__head">
+          <h2 class="h2 reveal" id="memories-title">{memoriesSection.title}</h2>
+          <p class="lead memories__lead reveal">{memoriesSection.lead}</p>
+        </header>
+
+        {photos.length > 0 && (
+          <ul class="memories__grid">
+            {photos.map((p) => (
+              <li class:list={['memories__item', 'reveal', p.wide && 'memories__item--wide']}>
+                <Photo src={p.image} alt={p.alt} ratio={p.wide ? '21 / 9' : '4 / 5'} sizes={p.wide ? '100vw' : '(min-width: 64rem) 30vw, 92vw'} />
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {reviews.length > 0 && (
+          <ul class="reviews">
+            {reviews.map((r) => (
+              <li class="review reveal">
+                <blockquote class="review__text">
+                  <p>{r.text}</p>
+                </blockquote>
+                <p class="review__author">
+                  {r.photo && hasPhoto(r.photo) && (
+                    <Photo src={r.photo} alt="" class="review__photo" ratio="1 / 1" sizes="3.5rem" widths={[112, 168]} />
+                  )}
+                  <span>
+                    <b>{r.name}</b>
+                    {r.about && <span class="review__about">{r.about}</span>}
+                  </span>
+                </p>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .memories__head {
+    display: grid;
+    gap: var(--space-m);
+    margin-bottom: var(--space-xl);
+  }
+
+  .memories__lead {
+    color: #ddd6ca;
+  }
+
+  .memories__grid {
+    display: grid;
+    gap: 0.6rem;
+  }
+
+  .reviews {
+    display: grid;
+    gap: var(--space-xl) var(--space-l);
+    margin-top: var(--space-xl);
+  }
+
+  .review__text {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    line-height: 1.45;
+  }
+
+  .review__text p::before {
+    content: '«';
+  }
+
+  .review__text p::after {
+    content: '»';
+  }
+
+  .review__author {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-top: var(--space-m);
+  }
+
+  .review__author :global(.review__photo) {
+    width: 3.5rem;
+    border-radius: 50%;
+  }
+
+  .review__about {
+    display: block;
+    font-size: var(--step--1);
+    color: var(--on-ink-mute);
+  }
+
+  @media (min-width: 48rem) {
+    .memories__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .memories__item--wide {
+      grid-column: 1 / -1;
+    }
+
+    .reviews {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+</style>

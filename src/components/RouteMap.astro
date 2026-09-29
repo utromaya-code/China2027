@@ -1,0 +1,392 @@
+---
+import { mainMap, insetMap, type MapShapes } from '../data/map-shapes';
+import {
+  mainPoints,
+  mainSegments,
+  insetPoints,
+  insetSegments,
+  provinceLabels,
+  riverLabels,
+  routeSection,
+  projectPoint,
+  type MapPoint,
+  type Segment,
+} from '../data/route';
+
+function curve(map: MapShapes, points: readonly MapPoint[], seg: Segment) {
+  const a = points.find((p) => p.id === seg.from)!;
+  const b = points.find((p) => p.id === seg.to)!;
+  const [x1, y1] = projectPoint(map.projection, a.lon, a.lat);
+  const [x2, y2] = projectPoint(map.projection, b.lon, b.lat);
+  const bend = seg.bend ?? 0;
+  const mx = (x1 + x2) / 2 - (y2 - y1) * bend;
+  const my = (y1 + y2) / 2 + (x2 - x1) * bend;
+  return `M${x1.toFixed(1)} ${y1.toFixed(1)}Q${mx.toFixed(1)} ${my.toFixed(1)} ${x2.toFixed(1)} ${y2.toFixed(1)}`;
+}
+
+function place(map: MapShapes, p: { lon: number; lat: number }) {
+  const [x, y] = projectPoint(map.projection, p.lon, p.lat);
+  return { x, y };
+}
+
+---
+
+<section class="route section section--ink" id="marshrut" aria-labelledby="route-title">
+  <div class="wrap">
+    <header class="route__head">
+      <h2 class="h2 reveal" id="route-title">{routeSection.title}</h2>
+      <p class="lead route__lead reveal">{routeSection.lead}</p>
+    </header>
+
+    <figure class="route__main reveal">
+      <svg
+        class="map"
+        viewBox={`0 0 ${mainMap.projection.width} ${mainMap.projection.height}`}
+        role="img"
+        aria-label="Карта южного Китая: поездом из Гуанчжоу в Яншо, самолётом из Гуйлиня в Лицзян, дальше дорогами нагорья до Шангри-Ла. Озеро Лугу — на крупном плане ниже"
+      >
+        <g class="map__neighbours">{mainMap.neighbours.map((n) => <path d={n.d} />)}</g>
+        <g class="map__provinces">
+          {mainMap.provinces.map((p) => <path class:list={[p.highlight && 'is-route']} d={p.d} />)}
+          <path d={mainMap.sar} />
+        </g>
+        <g class="map__rivers">{mainMap.rivers.map((r) => <path d={r.d} />)}</g>
+
+        <g class="map__province-labels" aria-hidden="true">
+          {provinceLabels.map((l) => {
+            const { x, y } = place(mainMap, l);
+            return (
+              <text x={x} y={y} text-anchor="middle">
+                <tspan class="map__province-ru">{l.name}</tspan>
+                <tspan class="map__province-zh" x={x} dy="1.35em">{l.hanzi}</tspan>
+              </text>
+            );
+          })}
+        </g>
+
+        <g class="map__segments">
+          {mainSegments.map((s) => <path class:list={['map__seg', `map__seg--${s.kind}`]} d={curve(mainMap, mainPoints, s)} />)}
+        </g>
+
+        <g class="map__points">
+          {mainPoints.map((p) => {
+            const { x, y } = place(mainMap, p);
+            const align = p.label?.align ?? 'start';
+            return (
+              <a href={p.anchor ? `#${p.anchor}` : undefined} class:list={['map__point', p.minor && 'is-minor']} data-id={p.id} aria-label={p.days ? `${p.name}, ${p.days}` : p.name}>
+                <circle cx={x} cy={y} r={p.minor ? 3.5 : 6} />
+                <text x={x + (p.label?.dx ?? 10)} y={y + (p.label?.dy ?? 0)} text-anchor={align}>
+                  <tspan class="map__name">{p.name}</tspan>
+                  {p.days && (
+                    <tspan class="map__days" x={x + (p.label?.dx ?? 10)} dy="1.25em">
+                      {p.days}
+                    </tspan>
+                  )}
+                </text>
+              </a>
+            );
+          })}
+        </g>
+      </svg>
+
+      <figcaption class="route__legend">
+        <span><i class="key key--train" aria-hidden="true"></i>{routeSection.legend.train}</span>
+        <span><i class="key key--flight" aria-hidden="true"></i>{routeSection.legend.flight}</span>
+        <span><i class="key key--road" aria-hidden="true"></i>{routeSection.legend.road}</span>
+      </figcaption>
+    </figure>
+
+    <div class="route__inset-grid">
+      <div class="route__inset-text">
+        <h3 class="h4 reveal">{routeSection.insetTitle}</h3>
+        <p class="reveal route__inset-lead">{routeSection.insetLead}</p>
+      </div>
+
+      <figure class="route__inset reveal">
+        <svg
+          class="map map--inset"
+          viewBox={`0 0 ${insetMap.projection.width} ${insetMap.projection.height}`}
+          role="img"
+          aria-label="Крупный план северо-запада Юньнани: Лицзян, ущелье Прыгающего тигра, Байшуйтай, Шангри-Ла, Сонгцзанлин, Напахай, Дабао, озеро Шуду, озеро Лугу и снежная гора Юйлун"
+        >
+          <g class="map__provinces">{insetMap.provinces.map((p) => <path class="is-route" d={p.d} />)}</g>
+          <g class="map__rivers map__rivers--inset">{insetMap.rivers.map((r) => <path d={r.d} />)}</g>
+          <g class="map__river-labels" aria-hidden="true">
+            {riverLabels.inset.map((l) => {
+              const { x, y } = place(insetMap, l);
+              return <text x={x} y={y} text-anchor="middle">{l.name}</text>;
+            })}
+          </g>
+          <g class="map__segments">
+            {insetSegments.map((s) => <path class:list={['map__seg', `map__seg--${s.kind}`]} d={curve(insetMap, insetPoints, s)} />)}
+          </g>
+          <g class="map__points">
+            {insetPoints.map((p) => {
+              const { x, y } = place(insetMap, p);
+              const align = p.label?.align ?? 'start';
+              return (
+                <a href={p.anchor ? `#${p.anchor}` : undefined} class:list={['map__point', p.minor && 'is-minor']} data-id={p.id} aria-label={p.name.replace('\n', ' ')}>
+                  <circle cx={x} cy={y} r={p.minor ? 4 : 6} />
+                  <text x={x + (p.label?.dx ?? 10)} y={y + (p.label?.dy ?? 0)} text-anchor={align}>
+                    {p.name.split('\n').map((line, i) => (
+                      <tspan class="map__name" x={x + (p.label?.dx ?? 10)} dy={i === 0 ? 0 : '1.15em'}>
+                        {line}
+                      </tspan>
+                    ))}
+                  </text>
+                </a>
+              );
+            })}
+          </g>
+        </svg>
+        <figcaption class="route__credit">Контуры и реки: Natural Earth</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<style>
+  .route__head {
+    display: grid;
+    gap: var(--space-m);
+    margin-bottom: var(--space-l);
+  }
+
+  .route__lead {
+    color: #ddd6ca;
+  }
+
+  .route__main {
+    margin: 0;
+  }
+
+  .map {
+    width: 100%;
+    height: auto;
+    font-family: var(--font-text);
+  }
+
+  .map__neighbours path {
+    fill: #191716;
+    stroke: #2c2826;
+    stroke-width: 0.8;
+  }
+
+  .map__provinces path {
+    fill: #221f1d;
+    stroke: #3a3531;
+    stroke-width: 0.8;
+    stroke-linejoin: round;
+  }
+
+  .map__provinces path.is-route {
+    fill: #2c2825;
+    stroke: #4b4540;
+  }
+
+  .map__rivers path {
+    fill: none;
+    stroke: #56616a;
+    stroke-width: 1.1;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .map__rivers--inset path {
+    stroke-width: 2;
+  }
+
+  .map__province-labels text {
+    fill: #6f675f;
+    font-size: 15px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+  }
+
+  .map__province-zh {
+    font-family: var(--font-hanzi);
+    letter-spacing: 0.3em;
+    font-size: 13px;
+  }
+
+  .map__river-labels text {
+    fill: #7d8993;
+    font-size: 14px;
+    font-style: normal;
+    letter-spacing: 0.08em;
+  }
+
+  .map__seg {
+    fill: none;
+    stroke: var(--cinnabar-light);
+    stroke-width: 2.4;
+    stroke-linecap: round;
+  }
+
+  .map__seg--flight {
+    stroke: var(--on-ink);
+    stroke-width: 1.6;
+    stroke-dasharray: 2 7;
+  }
+
+  .map__seg--road {
+    stroke-width: 2;
+  }
+
+  .map--inset .map__seg {
+    stroke-width: 2.6;
+  }
+
+  .map__point {
+    cursor: pointer;
+    text-decoration: none;
+  }
+
+  .map__point circle {
+    fill: var(--cinnabar-light);
+    stroke: var(--ink);
+    stroke-width: 2.5;
+  }
+
+  .map__point.is-minor circle {
+    fill: var(--on-ink);
+  }
+
+  .map__point text {
+    fill: var(--on-ink);
+    font-size: 17px;
+  }
+
+  .map--inset .map__point text {
+    font-size: 17px;
+  }
+
+  .map__point.is-minor text {
+    fill: var(--on-ink-mute);
+    font-size: 14px;
+  }
+
+  .map__name {
+    font-weight: 500;
+  }
+
+  .map__days {
+    fill: var(--on-ink-mute);
+    font-size: 14px;
+  }
+
+  .map__point:hover .map__name,
+  .map__point:focus-visible .map__name {
+    text-decoration: underline;
+  }
+
+  .route__legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.6rem;
+    margin-top: 1rem;
+    font-size: var(--step--1);
+    color: var(--on-ink-mute);
+  }
+
+  .route__legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+  }
+
+  .key {
+    display: inline-block;
+    width: 1.8rem;
+    height: 0;
+    border-top: 2.4px solid var(--cinnabar-light);
+  }
+
+  .key--flight {
+    border-top: 2px dotted var(--on-ink);
+  }
+
+  .route__inset-grid {
+    display: grid;
+    gap: var(--space-l);
+    margin-top: var(--space-xl);
+    padding-top: var(--space-xl);
+    border-top: 1px solid var(--line-on-ink);
+  }
+
+  .route__inset-lead {
+    margin-top: var(--space-s);
+    max-width: 44ch;
+    color: #ddd6ca;
+  }
+
+  .route__inset {
+    margin: 0;
+  }
+
+  .route__credit {
+    margin-top: 0.6rem;
+    font-size: 0.78rem;
+    color: var(--on-ink-mute);
+  }
+
+  @media (max-width: 43.99rem) {
+    .route__main {
+      margin-inline: calc(-1 * var(--gutter) + 0.4rem);
+    }
+
+    .map__point text {
+      font-size: 24px;
+    }
+
+    /* Общая карта на телефоне в 2,5 раза мельче: оставляем только главные
+       подписи, без дней, и крупнее. Фошань и аэропорт видно по точкам. */
+    .map:not(.map--inset) .map__point text {
+      font-size: 36px;
+    }
+
+    .map:not(.map--inset) .map__days,
+    .map:not(.map--inset) .map__point.is-minor text,
+    .map:not(.map--inset) .map__point[data-id='foshan'] text {
+      display: none;
+    }
+
+    .map:not(.map--inset) .map__point[data-id='guangzhou'] text {
+      text-anchor: middle;
+      transform: translate(-12px, 56px);
+    }
+
+    .map--inset .map__point text {
+      font-size: 27px;
+    }
+
+    .map--inset .map__point.is-minor text {
+      font-size: 23px;
+    }
+
+    .map__river-labels text {
+      font-size: 22px;
+    }
+
+    .map__days,
+    .map__point.is-minor text {
+      font-size: 20px;
+    }
+
+    .map__province-labels {
+      display: none;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .route__head {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      align-items: end;
+    }
+
+    .route__inset-grid {
+      grid-template-columns: minmax(0, 4fr) minmax(0, 6fr);
+      align-items: center;
+    }
+  }
+</style>

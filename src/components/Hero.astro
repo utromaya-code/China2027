@@ -1,0 +1,379 @@
+---
+import Photo from './Photo.astro';
+import SiteHeader from './SiteHeader.astro';
+import { hero, trip } from '../data/trip';
+import mistA from '../assets/textures/mist-a.webp';
+import mistB from '../assets/textures/mist-b.webp';
+---
+
+<header class="hero" data-hero>
+  <SiteHeader />
+
+  <div class="hero__media" aria-hidden="true">
+    <Photo
+      src="hero-karst"
+      alt=""
+      class="hero__photo"
+      sizes="100vw"
+      loading="eager"
+      fetchpriority="high"
+      widths={[640, 960, 1400, 1920, 2400]}
+      quality={70}
+      focus="62% 40%"
+    />
+    <div class="hero__mist hero__mist--a" style={`--mist:url(${mistA.src})`}></div>
+    <div class="hero__mist hero__mist--b" style={`--mist:url(${mistB.src})`}></div>
+    <div class="hero__shade"></div>
+  </div>
+
+  <div class="hero__glyph brush" aria-hidden="true">道</div>
+
+  <p class="hero__vertical hanzi vertical" lang="zh-Hans" aria-hidden="true">{hero.verticalHanzi}</p>
+
+  <div class="hero__content wrap">
+    <p class="hero__kicker label">{hero.kicker}</p>
+    <span class="hero__glyph-inline brush" aria-hidden="true">道</span>
+    <h1 class="display hero__title">
+      <span class="hero__line">Путь</span>
+      <span class="hero__line hero__line--nowrap">в Шангри-Ла</span>
+    </h1>
+    <p class="hero__lead">{hero.lead}<span class="hero__lead-more">{hero.leadMore}</span><span class="hero__lead-end">.</span></p>
+
+    <dl class="hero__facts">
+      <div>
+        <dt class="visually-hidden">Даты</dt>
+        <dd>{trip.dates.human}</dd>
+      </div>
+      <div>
+        <dt class="visually-hidden">Длительность</dt>
+        <dd>{trip.dates.totalDays} дней</dd>
+      </div>
+      <div>
+        <dt class="visually-hidden">Маршрут</dt>
+        <dd>{hero.route}</dd>
+      </div>
+    </dl>
+
+    <div class="hero__actions">
+      <a class="btn" href="#zayavka" data-analytics="hero_cta_click">{hero.cta}</a>
+      <a class="btn btn--ghost" href="#programma" data-analytics="route_cta_click">{hero.secondary}</a>
+    </div>
+  </div>
+
+  <p class="hero__moon">
+    <span class="hero__moon-disc" aria-hidden="true"></span>
+    <span><b>{hero.moon.date}</b> — {hero.moon.text}</span>
+  </p>
+</header>
+
+<style>
+  .hero {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    align-items: end;
+    min-height: 100svh;
+    min-height: max(100svh, 40rem);
+    padding-top: 6rem;
+    padding-bottom: clamp(5.5rem, 4rem + 4vw, 7.5rem);
+    overflow: hidden;
+    background: var(--ink);
+    color: var(--on-ink);
+  }
+
+  .hero__media {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+
+  .hero__media :global(.hero__photo) {
+    position: absolute;
+    inset: 0;
+    height: 100%;
+    animation: hero-drift 26s var(--ease) both;
+  }
+
+  @keyframes hero-drift {
+    from {
+      transform: scale(1.1);
+    }
+    to {
+      transform: scale(1);
+    }
+  }
+
+  /* Туман: две текстуры с разной скоростью; по горизонтали повторяются без стыков. */
+  .hero__mist {
+    position: absolute;
+    left: 0;
+    width: 200%;
+    background-image: var(--mist);
+    background-repeat: repeat-x;
+    background-size: 50% 100%;
+    pointer-events: none;
+    mix-blend-mode: screen;
+  }
+
+  .hero__mist--a {
+    top: 18%;
+    height: 55%;
+    opacity: 0.32;
+    animation: mist 90s linear infinite;
+  }
+
+  .hero__mist--b {
+    top: 48%;
+    height: 42%;
+    opacity: 0.22;
+    animation: mist 140s linear infinite reverse;
+  }
+
+  @keyframes mist {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  /*
+   * Затемнение только там, где текст. Туман на снимке почти белый, поэтому
+   * под колонкой текста фон приглушён до контраста 4,5:1 (замер по пикселям —
+   * scripts/contrast.mjs), а гора и туман справа остаются светлыми.
+   * На телефоне текст идёт во всю ширину — там приглушён весь кадр.
+   */
+  /* deslop-ignore-next-line 06 — затемнение под текстом, контраст проверен замером */
+  .hero__shade {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      rgb(17 16 16 / 0.84) 0%,
+      rgb(17 16 16 / 0.62) 32%,
+      rgb(17 16 16 / 0.7) 62%,
+      rgb(17 16 16 / 0.95) 100%
+    );
+  }
+
+  @media (min-width: 64rem) {
+    .hero__shade {
+      background:
+        linear-gradient(to bottom, rgb(17 16 16 / 0.8) 0, rgb(17 16 16 / 0) 8rem),
+        linear-gradient(to top, rgb(17 16 16 / 0.9) 0%, rgb(17 16 16 / 0) 55%),
+        linear-gradient(
+          to right,
+          rgb(17 16 16 / 0.86) 0%,
+          rgb(17 16 16 / 0.8) 50%,
+          rgb(17 16 16 / 0.45) 66%,
+          rgb(17 16 16 / 0) 80%
+        );
+    }
+  }
+
+  /* На телефоне знак стоит в потоке над заголовком — иначе он ложится на текст. */
+  .hero__glyph-inline {
+    display: block;
+    font-size: clamp(4.6rem, 3rem + 8vw, 6rem);
+    color: var(--cinnabar);
+    margin-bottom: 0.6rem;
+    animation: rise 1.4s var(--ease) both;
+  }
+
+  .hero__lead-more {
+    display: none;
+  }
+
+  .hero__glyph {
+    display: none;
+    position: absolute;
+    right: clamp(-5rem, -1rem - 3vw, 0rem);
+    top: clamp(4.5rem, 2rem + 8vh, 9rem);
+    z-index: 0;
+    font-size: clamp(14rem, 8rem + 26vw, 36rem);
+    color: var(--cinnabar);
+    opacity: 0.88;
+    mix-blend-mode: multiply;
+    pointer-events: none;
+    user-select: none;
+    -webkit-mask-image: linear-gradient(to bottom, #000 0 40%, transparent 60%);
+    mask-image: linear-gradient(to bottom, #000 0 40%, transparent 60%);
+    -webkit-mask-size: 100% 250%;
+    mask-size: 100% 250%;
+    -webkit-mask-position: 0 100%;
+    mask-position: 0 100%;
+    animation: ink-in 2.4s 0.3s var(--ease) forwards;
+  }
+
+  /* Знак «проступает» сверху вниз, как тушь, впитывающаяся в бумагу. */
+  @keyframes ink-in {
+    to {
+      -webkit-mask-position: 0 0;
+      mask-position: 0 0;
+    }
+  }
+
+  .hero__vertical {
+    position: absolute;
+    right: var(--gutter);
+    bottom: clamp(6rem, 4rem + 6vw, 9rem);
+    z-index: 1;
+    font-size: var(--step--1);
+    letter-spacing: 0.5em;
+    color: var(--on-ink-mute);
+    display: none;
+  }
+
+  .hero__content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero__kicker {
+    color: var(--on-ink);
+  }
+
+  .hero__title {
+    margin-top: 1.1rem;
+    font-size: clamp(2.7rem, 1.1rem + 9.2vw, 8.2rem);
+  }
+
+  .hero__line--nowrap {
+    white-space: nowrap;
+  }
+
+  .hero__line {
+    display: block;
+    animation: rise 1.2s var(--ease) both;
+  }
+
+  .hero__line + .hero__line {
+    animation-delay: 0.12s;
+  }
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(0.25em);
+      filter: blur(8px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+      filter: none;
+    }
+  }
+
+  .hero__lead {
+    margin-top: 1.6rem;
+    max-width: 44ch;
+    font-size: var(--step-1);
+    line-height: 1.5;
+    color: #e9e3d8;
+    text-wrap: pretty;
+    animation: rise 1.2s 0.25s var(--ease) both;
+  }
+
+  .hero__facts {
+    display: grid;
+    gap: 0.2rem;
+    margin: 1.6rem 0 0;
+    font-size: var(--step--1);
+    letter-spacing: 0.04em;
+    color: var(--on-ink);
+    animation: rise 1.2s 0.35s var(--ease) both;
+  }
+
+  .hero__facts div {
+    display: flex;
+    align-items: baseline;
+  }
+
+  .hero__facts dd {
+    margin: 0;
+  }
+
+  @media (min-width: 48rem) {
+    .hero__facts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem 1.4rem;
+    }
+
+    .hero__facts div + div::before {
+      content: '·';
+      margin-right: 1.4rem;
+      color: var(--cinnabar-light);
+    }
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    margin-top: 2rem;
+    animation: rise 1.2s 0.45s var(--ease) both;
+  }
+
+  .hero__moon {
+    position: absolute;
+    left: var(--gutter);
+    bottom: 1.4rem;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    max-width: calc(100% - 2 * var(--gutter));
+    font-size: var(--step--1);
+    color: var(--on-ink-mute);
+  }
+
+  .hero__moon b {
+    font-weight: 500;
+    color: var(--on-ink);
+  }
+
+  /* Полная луна — плоский диск, без свечения. */
+  .hero__moon-disc {
+    flex: none;
+    width: 0.95rem;
+    height: 0.95rem;
+    border-radius: 50%;
+    background: #efe6cf;
+  }
+
+  @media (min-width: 48rem) {
+    .hero__moon {
+      left: auto;
+      right: var(--gutter);
+    }
+
+    .hero__glyph {
+      display: block;
+      opacity: 0.92;
+    }
+
+    .hero__glyph-inline {
+      display: none;
+    }
+
+    .hero__lead-more {
+      display: inline;
+    }
+
+    .hero__lead-end {
+      display: none;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .hero__vertical {
+      display: block;
+    }
+
+    .hero__moon {
+      right: calc(var(--gutter) + 2.5rem);
+    }
+  }
+</style>

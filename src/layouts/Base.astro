@@ -1,0 +1,77 @@
+---
+import '@fontsource-variable/noto-serif-display/wght.css';
+import '@fontsource-variable/onest';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Картинка для соцсетей: путь внутри сайта. */
+  ogImage?: string;
+  structuredData?: unknown[];
+  noindex?: boolean;
+}
+
+const { title, description, ogImage, structuredData = [], noindex = false } = Astro.props;
+
+const canonical = Astro.site
+  ? new URL(Astro.url.pathname.replace(/\/$/, '') || '/', Astro.site).href
+  : Astro.url.href;
+
+// Через BASE_URL: на GitHub Pages сайт лежит в подкаталоге.
+const ogImageUrl =
+  ogImage && Astro.site
+    ? new URL(`${import.meta.env.BASE_URL}/${ogImage}`.replace(/\/{2,}/g, '/'), Astro.site).href
+    : ogImage;
+
+/** Иконка вкладки — красная печать со знаком 道, «путь». */
+const faviconSvg =
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">' +
+  '<rect width="32" height="32" rx="3" fill="#c7362c"/>' +
+  '<rect x="3" y="3" width="26" height="26" rx="1.5" fill="none" stroke="#f2eee6" stroke-width="1.6"/>' +
+  '<text x="16" y="23.5" text-anchor="middle" font-size="19" font-family="serif" fill="#f2eee6">道</text></svg>';
+const faviconHref = `data:image/svg+xml,${encodeURIComponent(faviconSvg)}`;
+---
+
+<!doctype html>
+<html lang="ru" class="no-js">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
+    <link rel="canonical" href={canonical} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="ru_RU" />
+    <meta property="og:site_name" content="Китай: путь в Шангри-Ла" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    {ogImageUrl && <meta property="og:image" content={ogImageUrl} />}
+    {ogImageUrl && <meta property="og:image:width" content="1200" />}
+    {ogImageUrl && <meta property="og:image:height" content="630" />}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    {ogImageUrl && <meta name="twitter:image" content={ogImageUrl} />}
+
+    <meta name="theme-color" content="#111010" />
+    <link rel="icon" type="image/svg+xml" href={faviconHref} />
+
+    <script is:inline>
+      document.documentElement.classList.remove('no-js');
+    </script>
+
+    {
+      structuredData.map((block) => (
+        <script is:inline type="application/ld+json" set:html={JSON.stringify(block)} />
+      ))
+    }
+  </head>
+  <body>
+    <a class="skip-link" href="#main">К основному содержанию</a>
+    <slot />
+  </body>
+</html>

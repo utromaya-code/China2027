@@ -1,0 +1,111 @@
+---
+import { trip } from '../data/trip';
+import { isReady } from '../data/content';
+
+/**
+ * Стоимость. Пока цена и состав не подтверждены, блок не называет цифр
+ * и не перечисляет «что входит» — только приглашение узнать условия.
+ * Как только поля в trip.ts заполнены, блок показывает их сам.
+ */
+const price = trip.price.amount;
+const deposit = trip.price.deposit;
+const single = trip.price.singleSupplement;
+const included = trip.inclusions.included;
+const excluded = trip.inclusions.excluded;
+const refund = trip.payment.refundPolicy;
+const fmt = (n: number) => `€${n.toLocaleString('ru-RU').replace(/ /g, ' ')}`;
+---
+
+<section class="pricing section section--paper" id="stoimost" aria-labelledby="pricing-title">
+  <div class="wrap pricing__grid">
+    <div>
+      <h2 class="h2 reveal" id="pricing-title">Стоимость</h2>
+      {
+        isReady(price) ? (
+          <p class="pricing__price reveal">{fmt(price)}</p>
+        ) : (
+          <p class="lead pricing__lead reveal">
+            Стоимость, состав и условия бронирования пришлём в ответ на заявку — вместе с ответами на ваши вопросы о маршруте.
+          </p>
+        )
+      }
+      {isReady(deposit) && <p class="pricing__note reveal">Бронирование — предоплатой {fmt(deposit)}.</p>}
+      {isReady(single) && <p class="pricing__note reveal">Одноместное размещение: +{fmt(single)}.</p>}
+      {isReady(refund) && <p class="pricing__note reveal">{refund}</p>}
+      <a class="btn pricing__cta reveal" href="#zayavka" data-analytics="price_cta_click">Узнать стоимость и забронировать</a>
+    </div>
+
+    {
+      (isReady(included) || isReady(excluded)) && (
+        <div class="pricing__lists">
+          {isReady(included) && (
+            <div class="reveal">
+              <h3 class="label">Входит</h3>
+              <ul>{included.map((x) => <li>{x}</li>)}</ul>
+            </div>
+          )}
+          {isReady(excluded) && (
+            <div class="reveal">
+              <h3 class="label">Отдельно</h3>
+              <ul>{excluded.map((x) => <li>{x}</li>)}</ul>
+            </div>
+          )}
+        </div>
+      )
+    }
+  </div>
+</section>
+
+<style>
+  .pricing {
+    border-top: 1px solid var(--line-on-paper);
+  }
+
+  .pricing__grid {
+    display: grid;
+    gap: var(--space-xl);
+  }
+
+  .pricing__lead {
+    margin-top: var(--space-m);
+    color: var(--on-paper-mute);
+    max-width: 46ch;
+  }
+
+  .pricing__price {
+    margin-top: var(--space-m);
+    font-family: var(--font-display);
+    font-size: var(--step-4);
+    line-height: 1;
+  }
+
+  .pricing__note {
+    margin-top: 0.6rem;
+    color: var(--on-paper-mute);
+  }
+
+  .pricing__cta {
+    margin-top: var(--space-l);
+  }
+
+  .pricing__lists {
+    display: grid;
+    gap: var(--space-l);
+  }
+
+  .pricing__lists ul {
+    display: grid;
+    gap: 0.45rem;
+    margin-top: 0.8rem;
+  }
+
+  @media (min-width: 64rem) {
+    .pricing__grid {
+      grid-template-columns: minmax(0, 6fr) minmax(0, 6fr);
+    }
+
+    .pricing__lists {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+</style>

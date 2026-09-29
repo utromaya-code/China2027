@@ -1,0 +1,75 @@
+---
+import { Image } from 'astro:assets';
+import { getPhoto } from '../data/images';
+
+interface Props {
+  /** Ключ файла в src/assets/photos (имя без расширения). */
+  src: string;
+  alt: string;
+  sizes?: string;
+  widths?: number[];
+  loading?: 'lazy' | 'eager';
+  fetchpriority?: 'high' | 'low' | 'auto';
+  class?: string;
+  /** Соотношение сторон рамки; без него — исходное. */
+  ratio?: string;
+  /** Точка фокуса для object-position, например '50% 30%'. */
+  focus?: string;
+  quality?: number;
+}
+
+const {
+  src,
+  alt,
+  sizes = '100vw',
+  widths = [480, 800, 1200, 1600, 2400],
+  loading = 'lazy',
+  fetchpriority = 'auto',
+  class: className = '',
+  ratio,
+  focus,
+  quality = 72,
+} = Astro.props;
+
+const image = getPhoto(src);
+const style = [ratio && `aspect-ratio:${ratio}`, focus && `--focus:${focus}`].filter(Boolean).join(';') || undefined;
+const decorative = alt.trim() === '';
+---
+
+{
+  image ? (
+    <div class:list={['photo', className]} style={style}>
+      <Image
+        src={image}
+        alt={alt}
+        widths={widths.filter((w) => w <= image.width)}
+        sizes={sizes}
+        loading={loading}
+        fetchpriority={fetchpriority}
+        decoding="async"
+        quality={quality}
+        role={decorative ? 'presentation' : undefined}
+        style={focus ? 'object-position: var(--focus)' : undefined}
+      />
+    </div>
+  ) : (
+    import.meta.env.DEV && (
+      <div class:list={['photo', 'photo--empty', className]} style={style} role="img" aria-label={alt}>
+        <span>DEV: нет файла «{src}»</span>
+      </div>
+    )
+  )
+}
+
+<style>
+  .photo--empty {
+    display: grid;
+    place-items: center;
+    min-height: 10rem;
+    padding: 1rem;
+    background: repeating-linear-gradient(45deg, #2a2523 0 10px, #332d2a 10px 20px);
+    color: #f2eee6;
+    font-size: 0.8rem;
+    text-align: center;
+  }
+</style>

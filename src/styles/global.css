@@ -1,0 +1,421 @@
+/*
+ * Дизайн-система «Путь в Шангри-Ла».
+ *
+ * Материалы китайской каллиграфии: тушь, рисовая бумага и красная печать.
+ * Киноварь — единственный акцент. Золото появляется только в главе
+ * о Шангри-Ла (свет масляных ламп), ночное индиго — только там же.
+ */
+
+@import './fonts-extra.css';
+
+:root {
+  /* Тушь и бумага */
+  --ink: #111010;
+  --ink-2: #1b1918;
+  --ink-3: #262321;
+  --paper: #f2eee6;
+  --paper-2: #e7e1d5;
+
+  --on-ink: #f2eee6;
+  --on-ink-mute: #b3aba0;
+  --on-paper: #161413;
+  --on-paper-mute: #5c544b;
+
+  --line-on-ink: rgb(242 238 230 / 0.16);
+  --line-on-paper: rgb(22 20 19 / 0.16);
+
+  /* Печать: киноварь. Для мелкого текста на бумаге — темнее, на туши — светлее. */
+  --cinnabar: #c7362c;
+  --cinnabar-deep: #a52a22;
+  --cinnabar-light: #e25446;
+
+  /* Только глава Шангри-Ла */
+  --night: #0e1130;
+  --night-2: #151a41;
+  --gold: #cfae6b;
+  --on-night-mute: #aeb2cc;
+
+  /* Пять цветов флагов лунгта: небо, ветер, огонь, вода, земля */
+  --flag-blue: #2f5fa8;
+  --flag-white: #f1efe8;
+  --flag-red: #c7362c;
+  --flag-green: #2f7d4f;
+  --flag-yellow: #e2b33c;
+
+  --font-display: 'Noto Serif Display Variable', 'Noto Serif Display', Georgia, serif;
+  --font-text: 'Onest Variable', 'Onest', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-brush: 'Brush Hanzi', 'Hanzi Serif', 'Noto Serif SC', 'Songti SC', serif;
+  --font-hanzi: 'Hanzi Serif', 'Noto Serif SC', 'Songti SC', serif;
+  --font-tibetan: 'Tibetan Uchen', 'Noto Serif Tibetan', 'Kailasa', serif;
+
+  /* Шкала с настоящими скачками между ступенями */
+  --step--1: clamp(0.84rem, 0.81rem + 0.14vw, 0.92rem);
+  --step-0: clamp(1.02rem, 0.97rem + 0.24vw, 1.14rem);
+  --step-1: clamp(1.22rem, 1.1rem + 0.55vw, 1.5rem);
+  --step-2: clamp(1.55rem, 1.3rem + 1.2vw, 2.2rem);
+  --step-3: clamp(2.05rem, 1.55rem + 2.4vw, 3.5rem);
+  --step-4: clamp(2.7rem, 1.9rem + 4vw, 5.4rem);
+  --step-5: clamp(3.3rem, 1.8rem + 7.4vw, 9rem);
+
+  --space-2xs: 0.35rem;
+  --space-xs: 0.6rem;
+  --space-s: 1rem;
+  --space-m: 1.6rem;
+  --space-l: 2.6rem;
+  --space-xl: 4.2rem;
+  --space-2xl: clamp(4.5rem, 3rem + 7vw, 9rem);
+
+  --wrap: 76rem;
+  --wrap-narrow: 44rem;
+  --gutter: clamp(1rem, 0.6rem + 2vw, 2.5rem);
+  --radius: 2px;
+
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  color-scheme: dark light;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  scroll-padding-top: 4.5rem;
+}
+
+body {
+  margin: 0;
+  background: var(--ink);
+  color: var(--on-ink);
+  font-family: var(--font-text);
+  font-size: var(--step-0);
+  line-height: 1.62;
+  font-feature-settings: 'kern', 'liga';
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: clip;
+}
+
+img,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+}
+
+img {
+  height: auto;
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+ul,
+ol,
+figure,
+blockquote,
+dl,
+dd {
+  margin: 0;
+}
+
+ul,
+ol {
+  padding: 0;
+  list-style: none;
+}
+
+a {
+  color: inherit;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+}
+
+button {
+  font: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--cinnabar-light);
+  outline-offset: 3px;
+}
+
+::selection {
+  background: var(--cinnabar);
+  color: #fff;
+}
+
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -4rem;
+  z-index: 100;
+  padding: 0.7rem 1rem;
+  background: var(--paper);
+  color: var(--on-paper);
+}
+
+.skip-link:focus {
+  top: 1rem;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ─── Раскладка ─── */
+
+.wrap {
+  width: min(100% - 2 * var(--gutter), var(--wrap));
+  margin-inline: auto;
+}
+
+.wrap--narrow {
+  width: min(100% - 2 * var(--gutter), var(--wrap-narrow));
+}
+
+.section {
+  position: relative;
+  padding-block: var(--space-2xl);
+}
+
+.section--paper {
+  background: var(--paper);
+  color: var(--on-paper);
+  --line: var(--line-on-paper);
+  --mute: var(--on-paper-mute);
+  --accent-text: var(--cinnabar-deep);
+}
+
+.section--ink {
+  background: var(--ink);
+  color: var(--on-ink);
+  --line: var(--line-on-ink);
+  --mute: var(--on-ink-mute);
+  --accent-text: var(--cinnabar-light);
+}
+
+.section--night {
+  background: var(--night);
+  color: var(--on-ink);
+  --line: rgb(207 174 107 / 0.22);
+  --mute: var(--on-night-mute);
+  --accent-text: var(--gold);
+}
+
+/* ─── Типографика ─── */
+
+.display {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: var(--step-5);
+  line-height: 0.92;
+  letter-spacing: -0.02em;
+  font-variation-settings: 'wdth' 100;
+}
+
+.h2 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--step-4);
+  line-height: 1;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+.h3 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--step-3);
+  line-height: 1.04;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.h4 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: var(--step-2);
+  line-height: 1.12;
+  text-wrap: balance;
+}
+
+.lead {
+  font-size: var(--step-1);
+  line-height: 1.5;
+  max-width: 40ch;
+  text-wrap: pretty;
+}
+
+.mute {
+  color: var(--mute);
+}
+
+.label {
+  font-size: var(--step--1);
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+
+.prose p + p {
+  margin-top: 0.95em;
+}
+
+.prose p {
+  max-width: 62ch;
+  text-wrap: pretty;
+}
+
+.brush {
+  font-family: var(--font-brush);
+  font-weight: 400;
+  line-height: 1;
+}
+
+.hanzi {
+  font-family: var(--font-hanzi);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+}
+
+.vertical {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+}
+
+.tibetan {
+  font-family: var(--font-tibetan);
+  line-height: 1.5;
+}
+
+/* ─── Кнопки ─── */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  min-height: 3.1rem;
+  padding: 0.85rem 1.5rem;
+  border: 1px solid var(--cinnabar);
+  border-radius: var(--radius);
+  background: var(--cinnabar);
+  color: #fff;
+  font-size: var(--step-0);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease;
+}
+
+.btn:hover {
+  background: var(--cinnabar-deep);
+  border-color: var(--cinnabar-deep);
+}
+
+.btn--ghost {
+  background: transparent;
+  border-color: currentColor;
+  color: inherit;
+}
+
+.btn--ghost:hover {
+  background: rgb(242 238 230 / 0.1);
+  border-color: currentColor;
+}
+
+.section--paper .btn--ghost:hover {
+  background: rgb(22 20 19 / 0.06);
+}
+
+.btn--wide {
+  width: 100%;
+}
+
+.link-arrow {
+  display: inline-flex;
+  gap: 0.45rem;
+  align-items: baseline;
+  font-weight: 500;
+  text-decoration: none;
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 0.1rem;
+}
+
+/* ─── Появление «как тушь»: из размытия в резкость ─── */
+
+.reveal {
+  opacity: 0;
+  filter: blur(6px);
+  transform: translateY(14px);
+  transition:
+    opacity 0.9s var(--ease),
+    filter 0.9s var(--ease),
+    transform 0.9s var(--ease);
+  transition-delay: var(--delay, 0s);
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  filter: none;
+  transform: none;
+}
+
+/* Без JS всё видно сразу. */
+.no-js .reveal {
+  opacity: 1;
+  filter: none;
+  transform: none;
+}
+
+/* ─── Фотографии ─── */
+
+.photo {
+  position: relative;
+  overflow: hidden;
+  background: var(--ink-3);
+}
+
+.photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  .reveal {
+    opacity: 1;
+    filter: none;
+    transform: none;
+  }
+}

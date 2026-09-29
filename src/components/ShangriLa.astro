@@ -1,0 +1,361 @@
+---
+import Photo from './Photo.astro';
+import DayCard from './DayCard.astro';
+import Mandala from './Mandala.astro';
+import PrayerFlags from './PrayerFlags.astro';
+import { shangrila } from '../data/shangrila';
+import { daysByChapter } from '../data/days';
+
+const days = daysByChapter('shangrila');
+---
+
+<section class="shangrila section section--night" id="shangri-la" aria-labelledby="shangrila-title" data-chapter="shangrila">
+  <PrayerFlags />
+
+  <div class="shangrila__intro wrap">
+    <Mandala class="shangrila__mandala" />
+
+    <div class="shangrila__title-block">
+      <p class="label shangrila__kicker reveal">{shangrila.kicker}</p>
+      <h2 class="display shangrila__title reveal" id="shangrila-title">{shangrila.title}</h2>
+      <p class="shangrila__subtitle reveal">{shangrila.subtitle}</p>
+    </div>
+
+    <p class="shangrila__hanzi hanzi vertical" lang="zh-Hans" aria-hidden="true">{shangrila.hanzi}</p>
+
+    <div class="shangrila__mantra reveal">
+      <p class="tibetan shangrila__mantra-text" lang="bo">{shangrila.mantra.tibetan}</p>
+      <p class="shangrila__mantra-reading">{shangrila.mantra.reading}</p>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <ol class="shangrila__legend" aria-label="История имени Шангри-Ла">
+      {
+        shangrila.legend.map((item, i) => (
+          <li class="shangrila__legend-item reveal" style={`--delay:${i * 0.12}s`}>
+            <span class:list={['shangrila__mark', /[^\d]/.test(item.mark) && 'hanzi']} lang={/[^\d]/.test(item.mark) ? 'zh-Hans' : undefined}>
+              {item.mark}
+            </span>
+            <p class="shangrila__legend-title">{item.title}</p>
+            <p class="shangrila__legend-text">{item.text}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+
+  <figure class="shangrila__banner reveal">
+    <Photo src="songzanlin-smoke" alt="Монастырь Сонгцзанлин на склоне горы: золотые крыши и дым благовоний над кельями" ratio="21 / 9" sizes="100vw" widths={[640, 960, 1400, 1920, 2400]} focus="50% 45%" />
+    <figcaption class="wrap shangrila__banner-caption">Сонгцзанлин, «Малая Потала». Основан в 1679 году.</figcaption>
+  </figure>
+
+  <div class="wrap">
+    {days.map((day, i) => <DayCard day={day} flip={i % 2 === 1} tone="night" />)}
+  </div>
+
+  <div class="wrap shangrila__places-wrap">
+    <header class="shangrila__places-head">
+      <h3 class="h2 reveal">Места силы</h3>
+      <p class="lead reveal">У каждого места Шангри-Ла есть факт, который можно проверить, и предание, которое передают из уст в уста.</p>
+    </header>
+
+    <ul class="places">
+      {
+        shangrila.places.map((p, i) => (
+          <li class="place reveal" id={`mesto-${p.id}`} style={`--delay:${(i % 4) * 0.08}s`}>
+            <Photo src={p.image} alt={p.imageAlt} focus={"focus" in p ? p.focus : undefined} class="place__photo" sizes="(min-width: 70rem) 40vw, (min-width: 40rem) 80vw, 100vw" widths={[480, 800, 1200, 1600]} />
+            <div class="place__text">
+              <p class="place__caption">{p.caption}</p>
+              <h4 class="place__name">
+                {p.name} <span class="hanzi place__hanzi" lang="zh-Hans">{p.hanzi}</span>
+              </h4>
+              <p class="place__desc">{p.text}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  <div class="wrap shangrila__etiquette">
+    <h3 class="h3 reveal">{shangrila.etiquette.title}</h3>
+    <ul class="etiquette">
+      {
+        shangrila.etiquette.items.map((item) => (
+          <li class="reveal">
+            <p class="etiquette__title">{item.title}</p>
+            <p class="etiquette__text">{item.text}</p>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="shangrila__greeting reveal">
+      <span class="tibetan" lang="bo">{shangrila.greeting.tibetan}</span>
+      <span class="shangrila__greeting-reading">{shangrila.greeting.reading} — {shangrila.greeting.meaning}</span>
+    </p>
+  </div>
+</section>
+
+<style>
+  .shangrila {
+    padding-top: 0;
+    overflow: hidden;
+  }
+
+  .shangrila__intro {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    text-align: center;
+    padding-block: var(--space-2xl) var(--space-xl);
+  }
+
+  .shangrila__intro :global(.shangrila__mandala) {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: min(62rem, 150vw);
+    translate: -50% -50%;
+    opacity: 0.22;
+    animation: turn 240s linear infinite;
+    pointer-events: none;
+  }
+
+  @keyframes turn {
+    to {
+      rotate: 360deg;
+    }
+  }
+
+  .shangrila__title-block {
+    position: relative;
+  }
+
+  .shangrila__kicker {
+    color: var(--gold);
+  }
+
+  .shangrila__title {
+    margin-top: 1rem;
+    font-size: clamp(3.6rem, 1.8rem + 9vw, 11rem);
+  }
+
+  .shangrila__subtitle {
+    margin-top: 1rem;
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    color: var(--gold);
+  }
+
+  .shangrila__hanzi {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    translate: 0 -50%;
+    font-size: var(--step-1);
+    letter-spacing: 0.6em;
+    color: var(--on-night-mute);
+    display: none;
+  }
+
+  .shangrila__mantra {
+    position: relative;
+    margin-top: var(--space-l);
+  }
+
+  .shangrila__mantra-text {
+    font-size: clamp(1.7rem, 1.3rem + 2vw, 2.8rem);
+    color: var(--gold);
+  }
+
+  .shangrila__mantra-reading {
+    margin-top: 0.2rem;
+    font-size: var(--step--1);
+    letter-spacing: 0.12em;
+    color: var(--on-night-mute);
+  }
+
+  .shangrila__legend {
+    display: grid;
+    gap: var(--space-l);
+    padding-block: var(--space-xl);
+    border-top: 1px solid var(--line);
+  }
+
+  .shangrila__mark {
+    display: block;
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: var(--step-4);
+    line-height: 1;
+    color: var(--on-ink);
+  }
+
+  .shangrila__mark.hanzi {
+    font-family: var(--font-brush);
+    color: var(--gold);
+    letter-spacing: 0;
+  }
+
+  .shangrila__legend-title {
+    margin-top: 0.9rem;
+    font-size: var(--step--1);
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  .shangrila__legend-text {
+    margin-top: 0.5rem;
+    max-width: 38ch;
+    color: #d9dbe8;
+    text-wrap: pretty;
+  }
+
+  .shangrila__banner {
+    margin: 0 0 var(--space-l);
+  }
+
+  .shangrila__banner :global(.photo) {
+    max-height: 78vh;
+  }
+
+  .shangrila__banner-caption {
+    margin-top: 0.7rem;
+    font-size: var(--step--1);
+    color: var(--on-night-mute);
+  }
+
+  .shangrila__places-wrap {
+    padding-top: var(--space-2xl);
+  }
+
+  .shangrila__places-head {
+    display: grid;
+    gap: var(--space-m);
+    margin-bottom: var(--space-xl);
+  }
+
+  .shangrila__places-head .lead {
+    color: #d9dbe8;
+  }
+
+  .places {
+    display: grid;
+    gap: var(--space-xl) var(--space-m);
+  }
+
+  .place :global(.place__photo) {
+    aspect-ratio: 4 / 3;
+  }
+
+  .place__text {
+    margin-top: var(--space-s);
+  }
+
+  .place__caption {
+    font-size: var(--step--1);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  .place__name {
+    margin-top: 0.3rem;
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: var(--step-2);
+    line-height: 1.1;
+  }
+
+  .place__hanzi {
+    font-size: 0.55em;
+    color: var(--on-night-mute);
+    vertical-align: 0.2em;
+  }
+
+  .place__desc {
+    margin-top: 0.6rem;
+    color: #d9dbe8;
+    text-wrap: pretty;
+  }
+
+  .shangrila__etiquette {
+    margin-top: var(--space-2xl);
+    padding-top: var(--space-xl);
+    border-top: 1px solid var(--line);
+  }
+
+  .etiquette {
+    display: grid;
+    gap: var(--space-m) var(--space-l);
+    margin-top: var(--space-l);
+  }
+
+  .etiquette__title {
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+  }
+
+  .etiquette__text {
+    margin-top: 0.3rem;
+    color: #d9dbe8;
+  }
+
+  .shangrila__greeting {
+    display: grid;
+    gap: 0.3rem;
+    margin-top: var(--space-xl);
+  }
+
+  .shangrila__greeting .tibetan {
+    font-size: var(--step-3);
+    color: var(--gold);
+  }
+
+  .shangrila__greeting-reading {
+    color: var(--on-night-mute);
+  }
+
+  @media (min-width: 40rem) {
+    .places {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .place :global(.place__photo) {
+      aspect-ratio: 4 / 5;
+    }
+
+    .etiquette {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .shangrila__hanzi {
+      display: block;
+    }
+
+    .shangrila__legend {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--space-xl);
+    }
+
+    .shangrila__places-head {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+      align-items: end;
+    }
+
+    .etiquette {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 70rem) {
+    .places {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+</style>

@@ -1,0 +1,117 @@
+---
+import { trip } from '../data/trip';
+import { usedCredits } from '../data/images';
+
+interface Props {
+  /** Ключи всех снимков страницы — по ним собирается список авторов. */
+  photoKeys?: readonly (string | undefined)[];
+}
+
+const { photoKeys = [] } = Astro.props;
+const credits = usedCredits(photoKeys);
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<footer class="footer">
+  <div class="wrap footer__grid">
+    <div class="footer__brand">
+      <p class="footer__title">{trip.country}: путь в Шангри-Ла</p>
+      <p class="footer__dates">{trip.dates.human}</p>
+      <p class="footer__contact">
+        Telegram: <a href={trip.contacts.telegram} rel="noopener" data-analytics="telegram_click">{trip.contacts.telegramHandle}</a>
+      </p>
+    </div>
+
+    <nav class="footer__nav" aria-label="Служебные ссылки">
+      <a href="#top">Наверх</a>
+      <a href="#zayavka">Оставить заявку</a>
+      <a href={`${base}/privacy`}>Политика конфиденциальности</a>
+    </nav>
+  </div>
+
+  {
+    credits.length > 0 && (
+      <div class="wrap">
+        <details class="credits">
+          <summary>Авторы фотографий и лицензии</summary>
+          <ul class="credits__list">
+            {credits.map((c) => (
+              <li>
+                <a href={c.originalUrl} rel="noopener nofollow">{c.title ?? c.key}</a> — {c.author},{' '}
+                {c.licenseUrl ? (
+                  <a href={c.licenseUrl} rel="noopener nofollow">{c.license}</a>
+                ) : (
+                  c.license
+                )}
+                , {c.source}
+              </li>
+            ))}
+          </ul>
+          <p class="credits__note">Карта: Natural Earth (public domain). Шрифты: SIL Open Font License.</p>
+        </details>
+      </div>
+    )
+  }
+</footer>
+
+<style>
+  .footer {
+    padding-block: var(--space-xl) var(--space-l);
+    background: #0b0a0a;
+    color: var(--on-ink-mute);
+    font-size: var(--step--1);
+    border-top: 1px solid var(--line-on-ink);
+  }
+
+  .footer__grid {
+    display: grid;
+    gap: var(--space-l);
+    margin-bottom: var(--space-l);
+  }
+
+  .footer__title {
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    color: var(--on-ink);
+  }
+
+  .footer__dates,
+  .footer__contact {
+    margin-top: 0.3rem;
+  }
+
+  .footer a {
+    color: var(--on-ink);
+  }
+
+  .footer__nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 1.6rem;
+    align-content: start;
+  }
+
+  .credits summary {
+    cursor: pointer;
+    color: var(--on-ink);
+  }
+
+  .credits__list {
+    display: grid;
+    gap: 0.35rem;
+    margin-top: 1rem;
+    font-size: 0.8rem;
+    overflow-wrap: anywhere;
+  }
+
+  .credits__note {
+    margin-top: 1rem;
+    font-size: 0.8rem;
+  }
+
+  @media (min-width: 48rem) {
+    .footer__grid {
+      grid-template-columns: 1fr auto;
+    }
+  }
+</style>

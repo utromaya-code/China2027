@@ -1,0 +1,117 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import Manifesto from '../components/Manifesto.astro';
+import Reasons from '../components/Reasons.astro';
+import RouteMap from '../components/RouteMap.astro';
+import Chapter from '../components/Chapter.astro';
+import ShangriLa from '../components/ShangriLa.astro';
+import Leaders from '../components/Leaders.astro';
+import Memories from '../components/Memories.astro';
+import Practical from '../components/Practical.astro';
+import Pricing from '../components/Pricing.astro';
+import Faq from '../components/Faq.astro';
+import LeadForm from '../components/LeadForm.astro';
+import Footer from '../components/Footer.astro';
+import MobileCta from '../components/MobileCta.astro';
+import Lightbox from '../components/Lightbox.astro';
+import DayRail from '../components/DayRail.astro';
+
+import { trip } from '../data/trip';
+import { days } from '../data/days';
+import { reasons } from '../data/reasons';
+import { shangrila } from '../data/shangrila';
+import { memoryPhotos } from '../data/memories';
+import { faq } from '../data/faq';
+import { isReady } from '../data/content';
+
+const title = 'Китай 2027: путь в Шангри-Ла — авторское путешествие 22 марта — 1 апреля';
+const description =
+  'Одиннадцать дней по Китаю без визы: Гуанчжоу, винчун в Фошане, карст и бамбуковые плоты Яншо, тибетская Шангри-Ла, озеро Лугу и снежная гора Юйлун. С Ильёй Бариновым, Андреем Барановым и Еленой Бакиной.';
+
+/** Все снимки страницы — по ним подвал собирает авторов и лицензии. */
+const photoKeys = [
+  'hero-karst',
+  ...reasons.map((r) => r.image),
+  ...days.flatMap((d) => [d.image, ...(d.gallery ?? []).map((g) => g.image)]),
+  'songzanlin-smoke',
+  ...shangrila.places.map((p) => p.image),
+  ...memoryPhotos.map((p) => p.image),
+];
+
+const price = trip.price.amount;
+
+const structuredData = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'TouristTrip',
+    name: 'Китай: путь в Шангри-Ла',
+    description,
+    touristType: ['Авторские путешествия', 'Культурный туризм', 'Практики'],
+    startDate: trip.dates.start,
+    endDate: trip.dates.end,
+    provider: { '@type': 'Organization', name: 'Vsemaya', url: trip.contacts.telegram },
+    itinerary: {
+      '@type': 'ItemList',
+      numberOfItems: days.length,
+      itemListElement: days.map((d) => ({
+        '@type': 'ListItem',
+        position: d.n,
+        name: `День ${d.n}. ${d.place}: ${d.title}`,
+      })),
+    },
+    ...(isReady(price)
+      ? {
+          offers: {
+            '@type': 'Offer',
+            price: String(price),
+            priceCurrency: trip.price.currency,
+            availability: 'https://schema.org/LimitedAvailability',
+          },
+        }
+      : {}),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faq.map((item) => ({
+      '@type': 'Question',
+      name: item.q,
+      acceptedAnswer: { '@type': 'Answer', text: item.a },
+    })),
+  },
+];
+---
+
+<Base title={title} description={description} ogImage="og-image.jpg" structuredData={structuredData}>
+  <div id="top"></div>
+  <Hero />
+
+  <main id="main">
+    <Manifesto />
+    <Reasons />
+    <RouteMap />
+    <Chapter id="south" anchor="programma" intro="Программа по дням" />
+    <ShangriLa />
+    <Chapter id="lijiang" />
+    <Leaders />
+    <Memories />
+    <Practical />
+    <Pricing />
+    <Faq />
+    <LeadForm />
+  </main>
+
+  <Footer photoKeys={photoKeys} />
+  <MobileCta />
+  <DayRail />
+  <Lightbox />
+</Base>
+
+<script>
+  import { initReveal } from '../scripts/reveal';
+  import { bindAnalytics } from '../scripts/analytics';
+
+  initReveal();
+  bindAnalytics();
+</script>

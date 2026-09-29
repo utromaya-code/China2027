@@ -1,0 +1,127 @@
+---
+import { days } from '../data/days';
+
+/**
+ * Навигация по дням на широком экране: вертикальная линейка у левого края.
+ * Видна, только пока читаешь программу; текущий день подсвечен.
+ */
+---
+
+<nav class="rail" aria-label="Дни программы" data-rail hidden>
+  <ol>
+    {
+      days.map((d) => (
+        <li>
+          <a href={`#${d.id}`} data-rail-day={d.n}>
+            <span class="rail__n">{d.n}</span>
+            <span class="rail__label">{d.place}</span>
+          </a>
+        </li>
+      ))
+    }
+  </ol>
+</nav>
+
+<style>
+  .rail {
+    position: fixed;
+    left: 1.1rem;
+    top: 50%;
+    z-index: 30;
+    translate: 0 -50%;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    mix-blend-mode: difference;
+    color: #f2eee6;
+  }
+
+  .rail.is-on {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .rail ol {
+    display: grid;
+    gap: 0.15rem;
+  }
+
+  .rail a {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.2rem 0;
+    text-decoration: none;
+    font-size: 0.78rem;
+    font-variant-numeric: tabular-nums;
+    opacity: 0.55;
+    transition: opacity 0.15s ease;
+  }
+
+  .rail__n {
+    display: inline-grid;
+    place-items: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    border: 1px solid currentColor;
+  }
+
+  .rail__label {
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    white-space: nowrap;
+  }
+
+  .rail a:hover,
+  .rail a:focus-visible,
+  .rail a.is-current {
+    opacity: 1;
+  }
+
+  /* Название — только по наведению: у текущего дня хватает залитого номера,
+     а длинная подпись заходила бы на текст страницы. */
+  .rail a:hover .rail__label,
+  .rail a:focus-visible .rail__label {
+    opacity: 1;
+  }
+
+  .rail a.is-current .rail__n {
+    background: currentColor;
+    color: #111010;
+  }
+
+  @media (max-width: 87.99rem) {
+    .rail {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  const rail = document.querySelector<HTMLElement>('[data-rail]');
+  const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-day]'));
+  if (rail && cards.length && 'IntersectionObserver' in window) {
+    rail.hidden = false;
+    const links = new Map(
+      Array.from(rail.querySelectorAll<HTMLAnchorElement>('[data-rail-day]')).map((a) => [a.dataset.railDay, a]),
+    );
+    const visible = new Set<string>();
+    const setCurrent = (n: string | undefined) =>
+      links.forEach((a, key) => a.classList.toggle('is-current', key === n));
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          const n = (e.target as HTMLElement).dataset.day!;
+          if (e.isIntersecting) visible.add(n);
+          else visible.delete(n);
+        }
+        const current = [...visible].sort((a, b) => Number(a) - Number(b))[0];
+        rail.classList.toggle('is-on', visible.size > 0);
+        if (current) setCurrent(current);
+      },
+      { rootMargin: '-40% 0px -55% 0px' },
+    );
+    cards.forEach((c) => io.observe(c));
+  }
+</script>

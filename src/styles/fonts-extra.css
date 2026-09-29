@@ -1,0 +1,26 @@
+/* Файл создан scripts/subset_fonts.py — вручную не редактировать. */
+/* Шрифты урезаны до знаков, которые есть на сайте. Лицензия шрифтов — SIL OFL 1.1. */
+
+@font-face {
+  font-family: 'Brush Hanzi';
+  src: url('../assets/fonts/brush.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Hanzi Serif';
+  src: url('../assets/fonts/hanzi-serif.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Tibetan Uchen';
+  src: url('../assets/fonts/tibetan.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}

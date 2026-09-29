@@ -1,0 +1,243 @@
+{
+  "_comment": "Отобранные кадры: ключ -> кандидат из commons.json / openverse.json. Скачивание: node scripts/fetch_selected.mjs",
+  "hero-karst": {
+    "src": "commons",
+    "slug": "ys-li-river",
+    "index": 5
+  },
+  "karst-boat-mist": {
+    "src": "commons",
+    "slug": "ys-li-river",
+    "index": 6
+  },
+  "moonhill-sunset": {
+    "src": "openverse",
+    "slug": "ys-moon-hill",
+    "index": 15
+  },
+  "songzanlin-smoke": {
+    "src": "openverse",
+    "slug": "sl-songzanlin",
+    "index": 2
+  },
+  "gz-night": {
+    "src": "commons",
+    "slug": "gz-skyline",
+    "index": 1
+  },
+  "canton-tower-night": {
+    "src": "commons",
+    "slug": "gz-canton-tower",
+    "index": 13
+  },
+  "yongqingfang-lanterns": {
+    "src": "openverse",
+    "slug": "gz-xiguan",
+    "index": 19
+  },
+  "enning-arcade": {
+    "src": "commons",
+    "slug": "gz-xiguan",
+    "index": 15
+  },
+  "foshan-lion-temple": {
+    "src": "commons",
+    "slug": "fs-zumiao",
+    "index": 17
+  },
+  "foshan-lion-poles": {
+    "src": "openverse",
+    "slug": "fs-lion-dance",
+    "index": 10
+  },
+  "foshan-roof": {
+    "src": "commons",
+    "slug": "fs-zumiao",
+    "index": 8
+  },
+  "foshan-dragon": {
+    "src": "commons",
+    "slug": "fs-zumiao",
+    "index": 20
+  },
+  "foshan-wishes": {
+    "src": "commons",
+    "slug": "fs-zumiao",
+    "index": 19
+  },
+  "yangshuo-aerial": {
+    "src": "commons",
+    "slug": "ys-yulong",
+    "index": 21
+  },
+  "west-street-rain": {
+    "src": "openverse",
+    "slug": "ys-west-street",
+    "index": 0
+  },
+  "beer-fish": {
+    "src": "openverse",
+    "slug": "ys-food",
+    "index": 2
+  },
+  "xianggong-sunrise": {
+    "src": "openverse",
+    "slug": "ys-karst-mist",
+    "index": 21
+  },
+  "xingping-bend": {
+    "src": "openverse",
+    "slug": "ys-karst-mist",
+    "index": 0
+  },
+  "shrine-mist": {
+    "src": "openverse",
+    "slug": "ys-karst-mist",
+    "index": 13
+  },
+  "yulong-bridge": {
+    "src": "commons",
+    "slug": "ys-yulong",
+    "index": 23
+  },
+  "yulong-raft-sunset": {
+    "src": "commons",
+    "slug": "ys-yulong",
+    "index": 0
+  },
+  "yulong-rafts": {
+    "src": "commons",
+    "slug": "ys-yulong",
+    "index": 14
+  },
+  "cormorant": {
+    "src": "openverse",
+    "slug": "ys-li-river",
+    "index": 3
+  },
+  "twenty-yuan": {
+    "src": "commons",
+    "slug": "ys-li-river",
+    "index": 7
+  },
+  "tiger-gorge": {
+    "src": "openverse",
+    "slug": "tiger-gorge",
+    "index": 5
+  },
+  "baishuitai": {
+    "src": "openverse",
+    "slug": "baishuitai",
+    "index": 2
+  },
+  "wheel-night": {
+    "src": "openverse",
+    "slug": "sl-prayer-wheel",
+    "index": 1
+  },
+  "dukezong-roofs": {
+    "src": "openverse",
+    "slug": "sl-dukezong",
+    "index": 22
+  },
+  "monks-boardwalk": {
+    "src": "openverse",
+    "slug": "sl-monks",
+    "index": 9
+  },
+  "butter-lamps": {
+    "src": "openverse",
+    "slug": "sl-butter-lamps",
+    "index": 5
+  },
+  "lamp-cups": {
+    "src": "openverse",
+    "slug": "sl-songzanlin",
+    "index": 8
+  },
+  "napahai-yaks": {
+    "src": "openverse",
+    "slug": "sl-napahai",
+    "index": 0
+  },
+  "cranes": {
+    "src": "openverse",
+    "slug": "sl-cranes",
+    "index": 6
+  },
+  "flags-sky": {
+    "src": "openverse",
+    "slug": "sl-prayer-flags",
+    "index": 17
+  },
+  "flags-tent": {
+    "src": "openverse",
+    "slug": "sl-landscape",
+    "index": 20
+  },
+  "woodblock": {
+    "src": "openverse",
+    "slug": "sl-printing",
+    "index": 2
+  },
+  "woodblock-print": {
+    "src": "openverse",
+    "slug": "sl-printing",
+    "index": 1
+  },
+  "shudu-mist": {
+    "src": "openverse",
+    "slug": "sl-shudu",
+    "index": 19
+  },
+  "shudu-reflection": {
+    "src": "openverse",
+    "slug": "sl-shudu",
+    "index": 0
+  },
+  "lijiang-night": {
+    "src": "openverse",
+    "slug": "lj-old-town",
+    "index": 2
+  },
+  "lijiang-snow-street": {
+    "src": "openverse",
+    "slug": "lj-old-town",
+    "index": 9
+  },
+  "lijiang-lanterns": {
+    "src": "openverse",
+    "slug": "lj-old-town",
+    "index": 17
+  },
+  "dongba-script": {
+    "src": "openverse",
+    "slug": "lj-old-town",
+    "index": 12
+  },
+  "yulong-peaks": {
+    "src": "openverse",
+    "slug": "yulong",
+    "index": 16
+  },
+  "yulong-glacier": {
+    "src": "openverse",
+    "slug": "yulong",
+    "index": 2
+  },
+  "lugu-lige": {
+    "src": "openverse",
+    "slug": "lugu",
+    "index": 2
+  },
+  "lugu-boats": {
+    "src": "openverse",
+    "slug": "lugu",
+    "index": 14
+  },
+  "lugu-night": {
+    "src": "openverse",
+    "slug": "lugu",
+    "index": 9
+  }
+}

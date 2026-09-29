@@ -1,0 +1,28 @@
+{
+  "name": "china-2027",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Китай: весна в Поднебесной — авторское путешествие 22 марта — 1 апреля 2027. Гуанчжоу, Фошань, Яншо, Шангри-Ла, Лицзян",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "typecheck": "astro check",
+    "fonts": "python3 scripts/subset_fonts.py",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.3",
+    "@fontsource-variable/noto-serif-display": "^5.3.0",
+    "@fontsource-variable/onest": "^5.3.0",
+    "astro": "^7.1.4",
+    "sharp": "^0.35.3"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "playwright": "^1.62.0",
+    "typescript": "^6.0.3"
+  }
+}

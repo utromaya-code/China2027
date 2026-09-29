@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.astro/
+.env
+.env.production
+.DS_Store
+npm-debug.log*
+*.log
+.tmp/
+
+# Промежуточные файлы подбора фотографий
+commons.json
+openverse.json
+__pycache__/

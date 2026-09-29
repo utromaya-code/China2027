@@ -1,0 +1,339 @@
+---
+import { trip } from '../data/trip';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<section class="lead-section section section--ink" id="zayavka" aria-labelledby="lead-title">
+  <div class="wrap lead-grid">
+    <div class="lead-intro">
+      <span class="lead-intro__glyph brush" aria-hidden="true">缘</span>
+      <h2 class="h2 reveal" id="lead-title">Хочу в Китай</h2>
+      <p class="lead lead-intro__text reveal">
+        Оставьте удобный контакт — пришлём стоимость и условия участия и ответим на вопросы о маршруте.
+      </p>
+      <p class="lead-intro__gloss reveal"><span class="hanzi">缘</span> — юань: связь, которая сводит людей в нужное время.</p>
+    </div>
+
+    <form class="form reveal" id="lead-form" novalidate data-telegram={trip.contacts.telegram}>
+      <div class="form__row">
+        <label class="field">
+          <span class="field__label">Имя <abbr title="обязательное поле">*</abbr></span>
+          <input type="text" name="name" autocomplete="name" required />
+          <span class="field__error" data-error-for="name"></span>
+        </label>
+        <label class="field">
+          <span class="field__label">Telegram или WhatsApp <abbr title="обязательное поле">*</abbr></span>
+          <input type="text" name="contact" required placeholder="@username или +7…" />
+          <span class="field__error" data-error-for="contact"></span>
+        </label>
+      </div>
+
+      <label class="field">
+        <span class="field__label">Email <em>— по желанию</em></span>
+        <input type="email" name="email" autocomplete="email" />
+        <span class="field__error" data-error-for="email"></span>
+      </label>
+
+      <label class="field">
+        <span class="field__label">Комментарий</span>
+        <textarea name="comment" rows="4" placeholder="Вопросы, пожелания, с кем едете"></textarea>
+      </label>
+
+      {/* Ловушка для ботов: поле спрятано и от людей, и от скринридеров. */}
+      <div class="form__trap" aria-hidden="true">
+        <label>
+          Не заполняйте это поле
+          <input type="text" name="website" tabindex="-1" autocomplete="off" />
+        </label>
+      </div>
+
+      <label class="form__consent">
+        <input type="checkbox" name="consent" required />
+        <span>
+          Согласен на обработку персональных данных в соответствии с{' '}
+          <a href={`${base}/privacy`}>политикой конфиденциальности</a>.
+        </span>
+      </label>
+      <span class="field__error" data-error-for="consent"></span>
+
+      <button class="btn btn--wide" type="submit">Отправить заявку</button>
+      <p class="form__status" role="status" aria-live="polite" data-form-status></p>
+
+      <p class="form__alt">
+        Или напишите сразу в Telegram:{' '}
+        <a href={trip.contacts.telegram} rel="noopener" data-analytics="telegram_click">{trip.contacts.telegramHandle}</a>
+      </p>
+    </form>
+  </div>
+</section>
+
+<style>
+  .lead-grid {
+    display: grid;
+    gap: var(--space-xl);
+  }
+
+  .lead-intro {
+    position: relative;
+  }
+
+  .lead-intro__glyph {
+    display: block;
+    font-size: clamp(6rem, 4rem + 8vw, 11rem);
+    color: var(--cinnabar);
+    margin-bottom: var(--space-m);
+  }
+
+  .lead-intro__text {
+    margin-top: var(--space-m);
+    color: #ddd6ca;
+  }
+
+  .lead-intro__gloss {
+    margin-top: var(--space-m);
+    font-size: var(--step--1);
+    color: var(--on-ink-mute);
+  }
+
+  .form {
+    display: grid;
+    gap: 1.3rem;
+    align-content: start;
+  }
+
+  .form__row {
+    display: grid;
+    gap: 1.3rem;
+  }
+
+  .form__trap {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  .field {
+    display: grid;
+    gap: 0.45rem;
+  }
+
+  .field__label {
+    font-size: var(--step--1);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--on-ink-mute);
+  }
+
+  .field__label em {
+    font-style: normal;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  .field__label abbr {
+    text-decoration: none;
+    color: var(--cinnabar-light);
+  }
+
+  input,
+  textarea {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    background: var(--ink-2);
+    border: 1px solid #3a3531;
+    border-radius: var(--radius);
+    color: var(--on-ink);
+    font: inherit;
+    font-size: 1rem;
+    transition: border-color 0.15s ease;
+  }
+
+  input:focus,
+  textarea:focus {
+    border-color: var(--on-ink-mute);
+    outline: none;
+  }
+
+  input:focus-visible,
+  textarea:focus-visible {
+    outline: 2px solid var(--cinnabar-light);
+    outline-offset: 1px;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: #7f776d;
+  }
+
+  .field--invalid input {
+    border-color: var(--cinnabar-light);
+  }
+
+  .field__error {
+    min-height: 1.1em;
+    font-size: var(--step--1);
+    color: #f09c90;
+  }
+
+  .form__consent {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.7rem;
+    align-items: start;
+    font-size: var(--step--1);
+    color: var(--on-ink-mute);
+  }
+
+  .form__consent input {
+    width: 1.15rem;
+    height: 1.15rem;
+    margin-top: 0.15rem;
+    accent-color: var(--cinnabar);
+  }
+
+  .form__status {
+    min-height: 1.4em;
+    font-size: var(--step--1);
+  }
+
+  .form__status[data-tone='ok'] {
+    color: #cfe3c8;
+  }
+
+  .form__status[data-tone='error'] {
+    color: #f09c90;
+  }
+
+  .form__alt {
+    font-size: var(--step--1);
+    color: var(--on-ink-mute);
+  }
+
+  .form__alt a {
+    color: var(--on-ink);
+  }
+
+  @media (min-width: 44rem) {
+    .form__row {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .lead-grid {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      gap: var(--space-2xl);
+    }
+  }
+</style>
+
+<script>
+  import { buildTelegramLeadUrl, submitLead, collectUtm, type Lead } from '../scripts/lead';
+  import { track } from '../scripts/analytics';
+
+  const form = document.querySelector<HTMLFormElement>('#lead-form');
+  const status = document.querySelector<HTMLElement>('[data-form-status]');
+
+  if (form && status) {
+    let started = false;
+    form.addEventListener('input', () => {
+      if (started) return;
+      started = true;
+      track('lead_form_start');
+    });
+
+    const setError = (name: string, message: string) => {
+      const slot = form.querySelector<HTMLElement>(`[data-error-for="${name}"]`);
+      if (slot) slot.textContent = message;
+      form
+        .querySelector(`[name="${name}"]`)
+        ?.closest('.field')
+        ?.classList.toggle('field--invalid', Boolean(message));
+    };
+
+    let submitting = false;
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (submitting) return;
+      const data = new FormData(form);
+      const name = String(data.get('name') ?? '').trim();
+      const contact = String(data.get('contact') ?? '').trim();
+      const email = String(data.get('email') ?? '').trim();
+
+      // Ловушка заполнена — бот. Показываем успех, ничего не отправляя.
+      if (String(data.get('website') ?? '').trim() !== '') {
+        status.dataset.tone = 'ok';
+        status.textContent = 'Спасибо, заявка отправлена.';
+        return;
+      }
+
+      let valid = true;
+      ['name', 'contact', 'email', 'consent'].forEach((f) => setError(f, ''));
+      if (name.length < 2) {
+        setError('name', 'Напишите, как к вам обращаться');
+        valid = false;
+      }
+      if (contact.length < 3) {
+        setError('contact', 'Оставьте Telegram или телефон — иначе мы не сможем ответить');
+        valid = false;
+      }
+      if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        setError('email', 'Проверьте адрес почты');
+        valid = false;
+      }
+      if (!data.get('consent')) {
+        setError('consent', 'Без согласия на обработку данных мы не сможем ответить');
+        valid = false;
+      }
+      if (!valid) {
+        form.querySelector<HTMLElement>('.field--invalid input')?.focus();
+        return;
+      }
+
+      const button = form.querySelector('button[type="submit"]') as HTMLButtonElement;
+      submitting = true;
+      button.disabled = true;
+      status.textContent = 'Отправляем…';
+      status.removeAttribute('data-tone');
+
+      const lead: Lead = {
+        name,
+        contact,
+        email: email || undefined,
+        comment: String(data.get('comment') ?? '').trim() || undefined,
+        source: 'Китай 2027: путь в Шангри-Ла',
+        page: location.href,
+        referrer: document.referrer,
+        utm: collectUtm(),
+      };
+
+      track('lead_form_submit');
+      const result = await submitLead(lead);
+
+      if (result.ok) {
+        track('lead_form_success');
+        form.reset();
+        status.dataset.tone = 'ok';
+        status.textContent = 'Спасибо! Мы напишем вам в ближайшее время.';
+      } else if (result.reason === 'not-configured') {
+        // Статический сайт без подключённого приёмника: передаём заявку
+        // в Telegram готовым сообщением — данные не теряются.
+        track('lead_form_telegram_handoff');
+        status.dataset.tone = 'ok';
+        status.textContent = 'Открываем Telegram с готовой заявкой…';
+        window.location.href = buildTelegramLeadUrl(lead, form.dataset.telegram);
+        return;
+      } else {
+        track('lead_form_error', { reason: result.reason });
+        status.dataset.tone = 'error';
+        status.textContent = 'Не получилось отправить. Напишите нам в Telegram — так точно дойдёт.';
+      }
+      button.disabled = false;
+      submitting = false;
+    });
+  }
+</script>

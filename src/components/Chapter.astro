@@ -1,0 +1,34 @@
+---
+import ChapterHead from './ChapterHead.astro';
+import DayCard from './DayCard.astro';
+import { daysByChapter, type ChapterId } from '../data/days';
+
+interface Props {
+  id: ChapterId;
+  /** id секции для навигации — у первой главы это «programma». */
+  anchor?: string;
+  intro?: string;
+}
+
+const { id, anchor, intro } = Astro.props;
+const list = daysByChapter(id);
+const headingId = `chapter-${id}-title`;
+---
+
+<section class="section section--paper chapter-section" id={anchor} aria-labelledby={headingId} data-chapter={id}>
+  <div class="wrap">
+    {intro && <p class="chapter-section__intro label">{intro}</p>}
+    <ChapterHead id={id} headingId={headingId} />
+    {list.map((day, i) => <DayCard day={day} flip={i % 2 === 1} />)}
+  </div>
+</section>
+
+<style>
+  .chapter-section {
+    padding-top: var(--space-xl);
+  }
+
+  .chapter-section__intro {
+    margin-bottom: var(--space-l);
+  }
+</style>

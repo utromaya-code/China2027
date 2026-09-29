@@ -1,0 +1,269 @@
+---
+import Photo from './Photo.astro';
+import type { Day } from '../data/days';
+
+interface Props {
+  day: Day;
+  /** Фото справа — через день, чтобы у программы был ритм. */
+  flip?: boolean;
+  tone?: 'paper' | 'night';
+}
+
+const { day, flip = false, tone = 'paper' } = Astro.props;
+---
+
+<article class:list={['day', flip && 'day--flip', `day--${tone}`]} id={day.id} data-day={day.n} aria-labelledby={`${day.id}-title`}>
+  <div class="day__media reveal">
+    <button class="day__zoom" type="button" data-lightbox={day.image} data-lightbox-alt={day.imageAlt} aria-label={`Открыть фото крупно: ${day.imageAlt}`}>
+      <Photo src={day.image} alt={day.imageAlt} class="day__photo" sizes="(min-width: 64rem) 66vw, 100vw" widths={[480, 800, 1200, 1600, 2400]} />
+    </button>
+    {
+      day.gallery && day.gallery.length > 0 && (
+        <ul class="day__gallery" aria-label="Ещё кадры этого дня">
+          {day.gallery.map((g) => (
+            <li>
+              <button class="day__zoom" type="button" data-lightbox={g.image} data-lightbox-alt={g.alt} aria-label={`Открыть фото крупно: ${g.alt}`}>
+                <Photo src={g.image} alt={g.alt} ratio="1 / 1" sizes="(min-width: 64rem) 12vw, 30vw" widths={[240, 400, 640]} />
+              </button>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </div>
+
+  <div class="day__body">
+    <header class="day__head reveal">
+      <p class="day__meta">
+        <span class="day__num">День {day.n}</span>
+        <span class="day__date">{day.dateHuman}, {day.weekday}</span>
+      </p>
+      <p class="day__place">
+        {day.place}
+        <span class="hanzi day__place-zh" lang="zh-Hans">{day.placeHanzi}</span>
+      </p>
+      <h3 class="h3 day__title" id={`${day.id}-title`}>{day.title}</h3>
+      {day.transfer && <p class="day__transfer">В пути: {day.transfer}</p>}
+    </header>
+
+    <div class="day__glyph reveal">
+      <span class="brush day__glyph-char" lang="zh-Hans" aria-hidden="true">{day.glyph.char}</span>
+      <div class="day__glyph-text">
+        <p class="day__glyph-name">
+          <span class="visually-hidden">Иероглиф дня {day.glyph.char}, </span>
+          <span lang="zh-Latn-pinyin">{day.glyph.pinyin}</span> — {day.glyph.meaning}
+        </p>
+        <p class="day__glyph-line">{day.glyph.line}</p>
+      </div>
+    </div>
+
+    <div class="prose day__text reveal">
+      {day.text.map((t) => <p>{t}</p>)}
+    </div>
+
+    <ul class="day__highlights reveal" aria-label="Что увидим">
+      {day.highlights.map((h) => <li>{h}</li>)}
+    </ul>
+
+    {
+      day.options && (
+        <p class="day__options reveal">
+          <span class="label">Альтернатива</span>
+          <span>{day.options.text}</span>
+        </p>
+      )
+    }
+
+    {
+      day.legend && (
+        <aside class="day__legend reveal" aria-label={`Легенда: ${day.legend.title}`}>
+          <p class="label">Легенда</p>
+          <p class="h4 day__legend-title">{day.legend.title}</p>
+          <p class="day__legend-text">{day.legend.text}</p>
+        </aside>
+      )
+    }
+  </div>
+</article>
+
+<style>
+  .day {
+    display: grid;
+    gap: var(--space-l);
+    padding-block: var(--space-xl);
+  }
+
+  .day + :global(.day) {
+    border-top: 1px solid var(--line);
+  }
+
+  /* На телефоне кадр горизонтальный — без тяжёлой обрезки; на широком — портретный. */
+  .day__media :global(.day__photo) {
+    aspect-ratio: 4 / 3;
+  }
+
+  .day__zoom {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: zoom-in;
+  }
+
+  .day__gallery {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+
+  .day__zoom :global(img) {
+    transition: opacity 0.2s ease;
+  }
+
+  .day__zoom:hover :global(img) {
+    opacity: 0.88;
+  }
+
+  .day__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem 1rem;
+    font-size: var(--step--1);
+    letter-spacing: 0.06em;
+  }
+
+  .day__num {
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent-text);
+  }
+
+  .day__date {
+    color: var(--mute);
+  }
+
+  .day__place {
+    margin-top: 0.9rem;
+    font-size: var(--step-1);
+  }
+
+  .day__place-zh {
+    margin-left: 0.5rem;
+    font-size: 0.8em;
+    color: var(--mute);
+  }
+
+  .day__title {
+    margin-top: 0.35rem;
+  }
+
+  .day__transfer {
+    margin-top: 0.9rem;
+    font-size: var(--step--1);
+    color: var(--mute);
+  }
+
+  .day__glyph {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: var(--space-m);
+    align-items: center;
+    margin-block: var(--space-l);
+  }
+
+  .day__glyph-char {
+    font-size: clamp(5rem, 4rem + 4vw, 7.5rem);
+    color: var(--cinnabar);
+  }
+
+  .day__glyph-name {
+    font-weight: 600;
+  }
+
+  .day__glyph-line {
+    margin-top: 0.3rem;
+    color: var(--mute);
+    max-width: 36ch;
+  }
+
+  .day__highlights {
+    display: grid;
+    gap: 0.5rem;
+    margin-top: var(--space-m);
+    padding-top: var(--space-m);
+    border-top: 1px solid var(--line);
+  }
+
+  .day__highlights li {
+    position: relative;
+    padding-left: 1.4rem;
+  }
+
+  /* Маркер — маленький квадрат киновари, как оттиск печати. */
+  .day__highlights li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.62em;
+    width: 0.45rem;
+    height: 0.45rem;
+    background: var(--cinnabar);
+  }
+
+  .day__options {
+    display: grid;
+    gap: 0.3rem;
+    margin-top: var(--space-m);
+  }
+
+  .day__legend {
+    margin-top: var(--space-l);
+    padding-top: var(--space-m);
+    border-top: 1px solid var(--line);
+  }
+
+  .day__legend-title {
+    margin-top: 0.4rem;
+  }
+
+  .day__legend-text {
+    margin-top: 0.6rem;
+    max-width: 56ch;
+    color: var(--mute);
+    text-wrap: pretty;
+  }
+
+  .day--night .day__glyph-char {
+    color: var(--gold);
+  }
+
+  .day--night .day__highlights li::before {
+    background: var(--gold);
+  }
+
+  @media (min-width: 64rem) {
+    .day {
+      grid-template-columns: minmax(0, 11fr) minmax(0, 12fr);
+      gap: var(--space-xl);
+      align-items: start;
+    }
+
+    .day--flip .day__media {
+      order: 2;
+    }
+
+    .day__media {
+      position: sticky;
+      top: 5.5rem;
+    }
+
+    .day__media :global(.day__photo) {
+      aspect-ratio: 4 / 5;
+      max-height: calc(100vh - 12rem);
+      width: 100%;
+    }
+  }
+</style>
