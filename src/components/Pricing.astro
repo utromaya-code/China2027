@@ -15,9 +15,18 @@ const schedule = trip.payment.schedule;
 const refund = trip.payment.refundPolicy;
 /** 2 000 € — по-русски сумма впереди, пробелы неразрывные. */
 const fmt = (n: number) => `${n.toLocaleString('ru-RU').replace(/\s/g, '\u00a0')}\u00a0€`;
-const bookingNote = [isReady(deposit) && `Бронь — предоплата ${fmt(deposit)}.`, isReady(schedule) && schedule]
-  .filter(Boolean)
-  .join(' ');
+const group = trip.groupSize;
+const join = (parts: (string | false)[]) => parts.filter(Boolean).join(' ');
+/** Две строки условий: кто едет и где живём; как бронировать и вернуть предоплату. */
+const groupNote = join([
+  isReady(group) && `Небольшая группа — до ${group} человек.`,
+  isReady(single) && `Одноместный номер — по\u00a0запросу,\u00a0+${fmt(single)}.`,
+]);
+const bookingNote = join([
+  isReady(deposit) && `Бронь — предоплата ${fmt(deposit)}.`,
+  isReady(schedule) && schedule,
+  isReady(refund) && refund,
+]);
 ---
 
 <section class="pricing section section--paper" id="stoimost" aria-labelledby="pricing-title">
@@ -40,9 +49,8 @@ const bookingNote = [isReady(deposit) && `Бронь — предоплата ${
           </p>
         )
       }
+      {groupNote && <p class="pricing__note reveal">{groupNote}</p>}
       {bookingNote && <p class="pricing__note reveal">{bookingNote}</p>}
-      {isReady(single) && <p class="pricing__note reveal">Одноместное размещение: +{fmt(single)}.</p>}
-      {isReady(refund) && <p class="pricing__note reveal">{refund}</p>}
       <a class="btn pricing__cta reveal" href="#zayavka" data-analytics="price_cta_click">
         {isReady(tiers) ? 'Забронировать место' : 'Узнать стоимость и забронировать'}
       </a>
@@ -121,6 +129,10 @@ const bookingNote = [isReady(deposit) && `Бронь — предоплата ${
     margin-top: var(--space-m);
     max-width: 46ch;
     color: var(--on-paper-mute);
+  }
+
+  .pricing__note + .pricing__note {
+    margin-top: 0.6rem;
   }
 
   .pricing__cta {
