@@ -107,7 +107,7 @@ function place(map: MapShapes, p: { lon: number; lat: number }) {
           class="map map--inset"
           viewBox={`0 0 ${insetMap.projection.width} ${insetMap.projection.height}`}
           role="img"
-          aria-label="Крупный план северо-запада Юньнани: Лицзян, ущелье Прыгающего тигра, Байшуйтай, Шангри-Ла, Сонгцзанлин, Напахай, Дабао, озеро Шуду, озеро Лугу и снежная гора Юйлун"
+          aria-label="Крупный план северо-запада провинции Юньнань: Лицзян, ущелье Прыгающего тигра, Байшуйтай, Шангри-Ла, Сонгцзанлин, Напахай, Дабао, озеро Шуду, озеро Лугу и снежная гора Юйлун"
         >
           <g class="map__provinces">{insetMap.provinces.map((p) => <path class="is-route" d={p.d} />)}</g>
           <g class="map__rivers map__rivers--inset">{insetMap.rivers.map((r) => <path d={r.d} />)}</g>

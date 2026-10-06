@@ -44,7 +44,7 @@ export const mainSegments: readonly Segment[] = [
   { from: 'lijiang', to: 'shangrila', kind: 'road', bend: 0.18 },
 ];
 
-/** Крупный план северо-запада Юньнани: дни 6–10. */
+/** Крупный план северо-запада провинции Юньнань: дни 6–10. */
 export const insetPoints: readonly MapPoint[] = [
   { id: 'lijiang', name: 'Лицзян', hanzi: '丽江', lon: 100.227, lat: 26.872, anchor: 'den-10', label: { dx: 12, dy: 6 } },
   { id: 'yulong', name: 'Юйлун, 5 596', hanzi: '玉龙雪山', lon: 100.175, lat: 27.098, anchor: 'den-10', label: { dx: 12, dy: 4 } },
@@ -88,7 +88,7 @@ export const riverLabels = {
 export const routeSection = {
   title: 'Маршрут',
   lead: 'Юг — поездом, в Юньнань — самолётом, дальше — дорогами нагорья. Отмечены места, где мы ночуем и что увидим.',
-  insetTitle: 'Северо-запад Юньнани',
+  insetTitle: 'Северо-запад провинции Юньнань',
   insetLead: 'Здесь сходятся Три параллельные реки — объект ЮНЕСКО. Цзиньша, верховье Янцзы, делает у Лицзяна крутую петлю и уходит в ущелье Прыгающего тигра.',
   legend: { train: 'поезд', flight: 'перелёт', road: 'дорога' },
 } as const;
