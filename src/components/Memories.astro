@@ -25,6 +25,22 @@ photos.forEach((p, i) => {
   }
 });
 if (col === 1) solo.add(photos.length - 1);
+
+/** На компьютере три колонки: блок между широкими кадрами должен делиться на три. */
+const blocks: number[] = [];
+let run = 0;
+for (const p of photos) {
+  if (p.wide) {
+    blocks.push(run);
+    run = 0;
+  } else run++;
+}
+blocks.push(run);
+if (blocks.some((n) => n % 3 !== 0)) {
+  console.warn(
+    `[memories] блоки между широкими кадрами: ${blocks.join(', ')} — на компьютере в ряду останется пустое место. Ставьте по 3 или 6 снимков.`,
+  );
+}
 ---
 
 {
@@ -182,7 +198,7 @@ if (col === 1) solo.add(photos.length - 1);
     }
 
     .memories__item--wide :global(.memories__photo) {
-      aspect-ratio: 21 / 9;
+      aspect-ratio: 16 / 9;
     }
 
     .reviews {

@@ -25,7 +25,7 @@ import { memoryPhotos } from '../data/memories';
 import { faq } from '../data/faq';
 import { isReady } from '../data/content';
 
-const title = 'Китай 2027: путь в Шангри-Ла — авторское путешествие 22 марта — 1 апреля';
+const title = 'Китай 2027: путь в Шангри-Ла — авторское путешествие 23 марта — 2 апреля';
 const description =
   'Одиннадцать дней по Китаю без визы: Гуанчжоу, винчун в Фошане, карст и бамбуковые плоты Яншо, тибетская Шангри-Ла, озеро Лугу и снежная гора Юйлун. С Ильёй Бариновым, Андреем Барановым и Еленой Бакиной.';
 
@@ -39,7 +39,7 @@ const photoKeys = [
   ...memoryPhotos.map((p) => p.image),
 ];
 
-const price = trip.price.amount;
+const tiers = trip.price.tiers;
 
 const structuredData = [
   {
@@ -60,11 +60,13 @@ const structuredData = [
         name: `День ${d.n}. ${d.place}: ${d.title}`,
       })),
     },
-    ...(isReady(price)
+    ...(isReady(tiers)
       ? {
           offers: {
-            '@type': 'Offer',
-            price: String(price),
+            '@type': 'AggregateOffer',
+            lowPrice: String(Math.min(...tiers.map((t) => t.amount))),
+            highPrice: String(Math.max(...tiers.map((t) => t.amount))),
+            offerCount: tiers.length,
             priceCurrency: trip.price.currency,
             availability: 'https://schema.org/LimitedAvailability',
           },

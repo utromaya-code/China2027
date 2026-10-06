@@ -316,6 +316,41 @@ import mistB from '../assets/textures/mist-b.webp';
     animation: rise 1.2s 0.45s var(--ease) both;
   }
 
+  /* Телефон: первый экран целиком помещается в 812 px — даты и «11 дней» в одну
+     строку, кнопки одной ширины, отметка о луне видна без прокрутки. */
+  @media (max-width: 47.99rem) {
+    .hero {
+      padding-top: 5.25rem;
+    }
+
+    .hero__lead {
+      margin-top: 1.3rem;
+    }
+
+    .hero__facts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.2rem 0.9rem;
+      margin-top: 1.3rem;
+    }
+
+    .hero__facts div:nth-child(2)::before {
+      content: '·';
+      margin-right: 0.9rem;
+      color: var(--cinnabar-light);
+    }
+
+    .hero__facts div:nth-child(3) {
+      flex-basis: 100%;
+    }
+
+    .hero__actions {
+      display: grid;
+      gap: 0.6rem;
+      margin-top: 1.6rem;
+    }
+  }
+
   .hero__moon {
     position: absolute;
     left: var(--gutter);

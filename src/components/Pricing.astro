@@ -3,36 +3,49 @@ import { trip } from '../data/trip';
 import { isReady } from '../data/content';
 
 /**
- * Стоимость. Пока цена и состав не подтверждены, блок не называет цифр
- * и не перечисляет «что входит» — только приглашение узнать условия.
- * Как только поля в trip.ts заполнены, блок показывает их сам.
+ * Стоимость. Цифры, состав и условия — только подтверждённые организатором
+ * (trip.ts). Неподтверждённое поле блок просто не показывает.
  */
-const price = trip.price.amount;
+const tiers = trip.price.tiers;
 const deposit = trip.price.deposit;
 const single = trip.price.singleSupplement;
 const included = trip.inclusions.included;
 const excluded = trip.inclusions.excluded;
+const schedule = trip.payment.schedule;
 const refund = trip.payment.refundPolicy;
-const fmt = (n: number) => `€${n.toLocaleString('ru-RU').replace(/ /g, ' ')}`;
+/** 2 000 € — по-русски сумма впереди, пробелы неразрывные. */
+const fmt = (n: number) => `${n.toLocaleString('ru-RU').replace(/\s/g, '\u00a0')}\u00a0€`;
+const bookingNote = [isReady(deposit) && `Бронь — предоплата ${fmt(deposit)}.`, isReady(schedule) && schedule]
+  .filter(Boolean)
+  .join(' ');
 ---
 
 <section class="pricing section section--paper" id="stoimost" aria-labelledby="pricing-title">
   <div class="wrap pricing__grid">
-    <div>
+    <div class="pricing__main">
       <h2 class="h2 reveal" id="pricing-title">Стоимость</h2>
       {
-        isReady(price) ? (
-          <p class="pricing__price reveal">{fmt(price)}</p>
+        isReady(tiers) ? (
+          <dl class="tiers reveal">
+            {tiers.map((t, i) => (
+              <div class:list={['tier', i === 0 && 'tier--first']}>
+                <dt class="tier__label">{t.label}</dt>
+                <dd class="tier__amount">{fmt(t.amount)}</dd>
+              </div>
+            ))}
+          </dl>
         ) : (
           <p class="lead pricing__lead reveal">
             Стоимость, состав и условия бронирования пришлём в ответ на заявку — вместе с ответами на ваши вопросы о маршруте.
           </p>
         )
       }
-      {isReady(deposit) && <p class="pricing__note reveal">Бронирование — предоплатой {fmt(deposit)}.</p>}
+      {bookingNote && <p class="pricing__note reveal">{bookingNote}</p>}
       {isReady(single) && <p class="pricing__note reveal">Одноместное размещение: +{fmt(single)}.</p>}
       {isReady(refund) && <p class="pricing__note reveal">{refund}</p>}
-      <a class="btn pricing__cta reveal" href="#zayavka" data-analytics="price_cta_click">Узнать стоимость и забронировать</a>
+      <a class="btn pricing__cta reveal" href="#zayavka" data-analytics="price_cta_click">
+        {isReady(tiers) ? 'Забронировать место' : 'Узнать стоимость и забронировать'}
+      </a>
     </div>
 
     {
@@ -41,13 +54,13 @@ const fmt = (n: number) => `€${n.toLocaleString('ru-RU').replace(/ /g, ' ')
           {isReady(included) && (
             <div class="reveal">
               <h3 class="label">Входит</h3>
-              <ul>{included.map((x) => <li>{x}</li>)}</ul>
+              <ul class="pricing__list">{included.map((x) => <li>{x}</li>)}</ul>
             </div>
           )}
           {isReady(excluded) && (
             <div class="reveal">
               <h3 class="label">Отдельно</h3>
-              <ul>{excluded.map((x) => <li>{x}</li>)}</ul>
+              <ul class="pricing__list pricing__list--extra">{excluded.map((x) => <li>{x}</li>)}</ul>
             </div>
           )}
         </div>
@@ -72,15 +85,41 @@ const fmt = (n: number) => `€${n.toLocaleString('ru-RU').replace(/ /g, ' ')
     max-width: 46ch;
   }
 
-  .pricing__price {
-    margin-top: var(--space-m);
+  .tiers {
+    margin: var(--space-l) 0 0;
+    border-top: 1px solid var(--line-on-paper);
+  }
+
+  /* Сумма сверху, подпись под ней — одинаково у всех ступеней цены. */
+  .tier {
+    display: grid;
+    gap: 0.45rem;
+    padding-block: var(--space-m);
+    border-bottom: 1px solid var(--line-on-paper);
+  }
+
+  .tier__label {
+    order: 2;
+    color: var(--on-paper-mute);
+  }
+
+  .tier__amount {
+    order: 1;
+    margin: 0;
     font-family: var(--font-display);
     font-size: var(--step-4);
     line-height: 1;
+    white-space: nowrap;
+  }
+
+  .tier--first .tier__label {
+    color: var(--cinnabar-deep);
+    font-weight: 500;
   }
 
   .pricing__note {
-    margin-top: 0.6rem;
+    margin-top: var(--space-m);
+    max-width: 46ch;
     color: var(--on-paper-mute);
   }
 
@@ -91,17 +130,40 @@ const fmt = (n: number) => `€${n.toLocaleString('ru-RU').replace(/ /g, ' ')
   .pricing__lists {
     display: grid;
     gap: var(--space-l);
+    align-content: start;
   }
 
-  .pricing__lists ul {
+  .pricing__list {
     display: grid;
-    gap: 0.45rem;
+    gap: 0.55rem;
     margin-top: 0.8rem;
+  }
+
+  .pricing__list li {
+    position: relative;
+    padding-left: 1.2rem;
+  }
+
+  /* Маркеры: черта киновари — входит, тонкая черта — отдельно. */
+  .pricing__list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.72em;
+    width: 0.6rem;
+    height: 2px;
+    background: var(--cinnabar);
+  }
+
+  .pricing__list--extra li::before {
+    height: 1px;
+    background: var(--on-paper-mute);
   }
 
   @media (min-width: 64rem) {
     .pricing__grid {
-      grid-template-columns: minmax(0, 6fr) minmax(0, 6fr);
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      gap: var(--space-xl) var(--space-2xl);
     }
 
     .pricing__lists {

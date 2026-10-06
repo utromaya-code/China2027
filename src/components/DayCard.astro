@@ -10,6 +10,17 @@ interface Props {
 }
 
 const { day, flip = false, tone = 'paper' } = Astro.props;
+
+/**
+ * Миниатюры всегда заполняют ряд целиком: одна — полосой 3:1, две — по 3:2,
+ * три — квадратами. Высота ряда при этом одинаковая у всех дней.
+ */
+const thumbs = day.gallery ?? [];
+const n = Math.min(thumbs.length, 3);
+const thumbRatio = n === 1 ? '3 / 1' : n === 2 ? '3 / 2' : '1 / 1';
+const thumbSizes =
+  n === 1 ? '(min-width: 64rem) 36vw, 100vw' : n === 2 ? '(min-width: 64rem) 18vw, 50vw' : '(min-width: 64rem) 12vw, 30vw';
+const thumbWidths = n === 1 ? [480, 800, 1200] : n === 2 ? [320, 560, 800] : [240, 400, 640];
 ---
 
 <article class:list={['day', flip && 'day--flip', `day--${tone}`]} id={day.id} data-day={day.n} aria-labelledby={`${day.id}-title`}>
@@ -18,12 +29,12 @@ const { day, flip = false, tone = 'paper' } = Astro.props;
       <Photo src={day.image} alt={day.imageAlt} class="day__photo" sizes="(min-width: 64rem) 66vw, 100vw" widths={[480, 800, 1200, 1600, 2400]} />
     </button>
     {
-      day.gallery && day.gallery.length > 0 && (
-        <ul class="day__gallery" aria-label="Ещё кадры этого дня">
-          {day.gallery.map((g) => (
+      n > 0 && (
+        <ul class="day__gallery" style={`--thumbs:${n}`} aria-label="Ещё кадры этого дня">
+          {thumbs.slice(0, 3).map((g) => (
             <li>
               <button class="day__zoom" type="button" data-lightbox={g.image} data-lightbox-alt={g.alt} aria-label={`Открыть фото крупно: ${g.alt}`}>
-                <Photo src={g.image} alt={g.alt} ratio="1 / 1" sizes="(min-width: 64rem) 12vw, 30vw" widths={[240, 400, 640]} />
+                <Photo src={g.image} alt={g.alt} ratio={thumbRatio} sizes={thumbSizes} widths={thumbWidths} />
               </button>
             </li>
           ))}
@@ -113,7 +124,7 @@ const { day, flip = false, tone = 'paper' } = Astro.props;
 
   .day__gallery {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(var(--thumbs, 3), minmax(0, 1fr));
     gap: 0.5rem;
     margin-top: 0.5rem;
   }

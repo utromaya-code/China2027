@@ -1,6 +1,12 @@
 import { TODO_CONTENT, type Pending } from './content';
 import { checkProductionContent } from './production';
 
+export interface PriceTier {
+  amount: number;
+  /** Для кого эта цена — подпись рядом с суммой. */
+  label: string;
+}
+
 /**
  * Базовые факты о путешествии — единственный источник правды.
  * Даты, города, контакты и всё, что связано с ценой, берутся отсюда.
@@ -14,10 +20,10 @@ export const trip = {
   brand: 'Китай 2027',
 
   dates: {
-    start: '2027-03-22',
-    end: '2027-04-01',
-    human: '22 марта — 1 апреля 2027',
-    humanShort: '22.03 — 01.04.2027',
+    start: '2027-03-23',
+    end: '2027-04-02',
+    human: '23 марта — 2 апреля 2027',
+    humanShort: '23.03 — 02.04.2027',
     totalDays: 11,
   },
 
@@ -27,20 +33,38 @@ export const trip = {
   /** Размер группы не подтверждён — на сайте не показываем. */
   groupSize: TODO_CONTENT as Pending<number>,
 
-  /** Цена и её состав не подтверждены — блок стоимости показывает приглашение узнать её. */
+  /** Цена за участие: первые пять мест дешевле. Подтверждено организатором. */
   price: {
-    amount: TODO_CONTENT as Pending<number>,
+    tiers: [
+      { amount: 2000, label: 'для первых пяти участников' },
+      { amount: 2300, label: 'для остальных' },
+    ] as Pending<readonly PriceTier[]>,
     currency: 'EUR',
-    deposit: TODO_CONTENT as Pending<number>,
+    deposit: 1000 as Pending<number>,
     singleSupplement: TODO_CONTENT as Pending<number>,
   },
 
+  /** Состав — со слов организатора; формулировки как в Дао-туре 2026. */
   inclusions: {
-    included: TODO_CONTENT as Pending<readonly string[]>,
-    excluded: TODO_CONTENT as Pending<readonly string[]>,
+    included: [
+      'Проживание в отелях на всём маршруте',
+      'Завтраки',
+      'Все переезды по программе: трансферы, поезд Фошань — Яншо, перелёт Гуйлинь — Лицзян',
+      'Практики по программе',
+      'Сопровождение ведущих от первого до последнего дня',
+    ] as Pending<readonly string[]>,
+    excluded: [
+      'Перелёт в Китай и обратно',
+      'Входные билеты в парки, монастыри и на канатную дорогу Юйлуна',
+      'Обеды и ужины',
+      'Страховка',
+      'Активности по выбору: аренда скутера, пещера, квадроциклы',
+      'Сувениры и личные расходы',
+    ] as Pending<readonly string[]>,
   },
 
   payment: {
+    schedule: 'Остаток — по графику, детали при записи.' as Pending<string>,
     refundPolicy: TODO_CONTENT as Pending<string>,
   },
 
@@ -67,8 +91,8 @@ export const hero = {
   cta: 'Хочу поехать',
   secondary: 'Программа по дням',
   moon: {
-    date: '22 марта',
-    text: 'первое полнолуние весны — в первый же вечер',
+    date: '23 марта',
+    text: 'старт под полной луной весны',
   },
   /** Вертикальная подпись иероглифами: «путь в Шангри-Ла». */
   verticalHanzi: '香格里拉之路',
@@ -82,7 +106,7 @@ export const manifesto = {
 } as const;
 
 checkProductionContent([
-  { path: 'trip.price.amount', value: trip.price.amount, need: 'стоимость участия' },
+  { path: 'trip.price.tiers', value: trip.price.tiers, need: 'стоимость участия' },
   { path: 'trip.price.deposit', value: trip.price.deposit, need: 'размер предоплаты для брони' },
   {
     path: 'trip.price.singleSupplement',

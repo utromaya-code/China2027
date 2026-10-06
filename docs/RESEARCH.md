@@ -12,7 +12,18 @@
 | --- | --- |
 | Безвизовый режим КНР для россиян продлён до 31 декабря 2027 года, въезд без визы до 30 дней | [Коммерсантъ](https://www.kommersant.ru/doc/8831968), [Российская газета, 21.07.2026](https://rg.ru/2026/07/21/kitaj-prodlil-bezvizovyj-rezhim-dlia-grazhdan-rf-do-konca-2027-goda.html), [Meduza](https://meduza.io/news/2026/05/20/kitay-prodlil-bezvizovyy-rezhim-dlya-rossiyan-do-kontsa-2027-goda) |
 | Полнолуние 22 марта 2027 в 10:44 UTC (18:44 по Пекину) — первое полнолуние после равноденствия 20 марта | [Star Walk](https://starwalk.space/en/news/full-moon-march), [MoonGiant](https://www.moongiant.com/moonphases/march/2027/) |
+| Старт 23 марта — через сутки после полнолуния: луна освещена на ~99%, на сайте «ещё полная», «старт под полной луной» | там же |
 | 2027 — год Огненной Козы (羊), китайский Новый год 6 февраля 2027 | [Smithsonian](https://www.si.edu/spotlight/lunar-year-goat), [Wikipedia: Goat (zodiac)](https://en.wikipedia.org/wiki/Goat_(zodiac)) |
+
+## Перелёты (проверено в октябре 2026, расписание на март 2027 ещё не опубликовано)
+
+| Факт | Источник |
+| --- | --- |
+| «Аэрофлот» SU220 Шереметьево — Гуанчжоу (CAN) ежедневно, 19:15 → 09:30 следующего дня, около 9 ч 15 мин | [Туту.ру: SU 220](https://avia.tutu.ru/reys/SU_220/) |
+| «Аэрофлот» SU221 Гуанчжоу — Москва: вылет около 11:10–11:50 | [Туту.ру: SU 221](https://avia.tutu.ru/reys/SU_221/) |
+| China Southern Гуанчжоу — Шереметьево с 29.03.2026: CZ656 SVO 21:15 → CAN 11:40+1, CZ8028 SVO 15:55 → CAN 06:35+1; обратно CZ655 CAN 13:50 → SVO 19:15, CZ8027 CAN 08:40 → SVO 13:55 | [AeroRoutes, 06.01.2026](https://www.aeroroutes.com/eng/260106-czns26cansvo) |
+| Из Лицзяна (LJG) прямые внутренние рейсы в Гуанчжоу, Шанхай, Пекин, Чэнду, Куньмин | [Trip.com: LJG](https://au.trip.com/flights/airport-ljg), [AirportRoutes: LJG](https://www.airportroutes.com/airports/zplj/) |
+| Лицзян — Гуанчжоу у China Southern: вылеты около 10:45, 14:30, 15:45, в пути ~2 ч 45 мин — на рейсы в Москву из Гуанчжоу в тот же день не успеть | [FlightsFrom: LJG–CAN](https://www.flightsfrom.com/LJG-CAN) |
 
 ## Гуанчжоу (广州)
 

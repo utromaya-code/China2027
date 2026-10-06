@@ -38,7 +38,7 @@ export const mainPoints: readonly MapPoint[] = [
 
 export const mainSegments: readonly Segment[] = [
   { from: 'guangzhou', to: 'foshan', kind: 'road' },
-  { from: 'guangzhou', to: 'yangshuo', kind: 'train', bend: -0.06 },
+  { from: 'foshan', to: 'yangshuo', kind: 'train', bend: -0.06 },
   { from: 'yangshuo', to: 'guilin', kind: 'road' },
   { from: 'guilin', to: 'lijiang', kind: 'flight', bend: 0.16 },
   { from: 'lijiang', to: 'shangrila', kind: 'road', bend: 0.18 },
