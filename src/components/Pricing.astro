@@ -18,10 +18,11 @@ const fmt = (n: number) => `${n.toLocaleString('ru-RU').replace(/\s/g, '\u00a0')
 const group = trip.groupSize;
 const join = (parts: (string | false)[]) => parts.filter(Boolean).join(' ');
 /** Две строки условий: кто едет и где живём; как бронировать и вернуть предоплату. */
-const groupNote = join([
+/** Группа и номер — каждое с новой строки, чтобы на телефоне не рвалось посередине. */
+const groupLines = [
   isReady(group) && `Небольшая группа — до ${group} человек.`,
-  isReady(single) && `Одноместный номер — по\u00a0запросу,\u00a0+${fmt(single)}.`,
-]);
+  isReady(single) && `Одноместный — по запросу, +${fmt(single)}.`,
+].filter((x): x is string => Boolean(x));
 const bookingNote = join([
   isReady(deposit) && `Бронь — предоплата ${fmt(deposit)}.`,
   isReady(schedule) && schedule,
@@ -49,7 +50,7 @@ const bookingNote = join([
           </p>
         )
       }
-      {groupNote && <p class="pricing__note reveal">{groupNote}</p>}
+      {groupLines.length > 0 && <p class="pricing__note reveal">{groupLines.map((line) => <span class="pricing__line">{line}</span>)}</p>}
       {bookingNote && <p class="pricing__note reveal">{bookingNote}</p>}
       <a class="btn pricing__cta reveal" href="#zayavka" data-analytics="price_cta_click">
         {isReady(tiers) ? 'Забронировать место' : 'Узнать стоимость и забронировать'}
@@ -133,6 +134,10 @@ const bookingNote = join([
 
   .pricing__note + .pricing__note {
     margin-top: 0.6rem;
+  }
+
+  .pricing__line {
+    display: block;
   }
 
   .pricing__cta {
