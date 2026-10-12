@@ -71,7 +71,7 @@
 
 ## 5. Технически
 
-- [ ] свой домен с «Шангри-Ла» — купить и подключить, см. README, раздел «Домен».
+- [x] домен shangrila-trip.ru — куплен; DNS и Custom domain в GitHub — см. README, раздел «Деплой».
 - [ ] приёмник заявок: адрес вебхука в секрете `PUBLIC_LEAD_FORM_ENDPOINT`
       (Settings → Secrets and variables → Actions). Пока его нет, заявка уходит
       готовым сообщением в Telegram @vsemaya — это работает уже сейчас.

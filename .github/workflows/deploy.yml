@@ -40,10 +40,10 @@ jobs:
       - name: Собрать сайт
         run: npm run build
         env:
-          # Для своего домена задайте переменные репозитория SITE_URL и BASE_PATH
-          # (Settings → Secrets and variables → Actions → Variables).
-          SITE_URL: ${{ vars.SITE_URL }}
-          BASE_PATH: ${{ vars.BASE_PATH }}
+          # Сайт живёт на своём домене (Settings → Pages → Custom domain).
+          # Адрес задан здесь явно, чтобы старые переменные репозитория его не перебили.
+          SITE_URL: https://shangrila-trip.ru
+          BASE_PATH: /
           PUBLIC_LEAD_FORM_ENDPOINT: ${{ secrets.PUBLIC_LEAD_FORM_ENDPOINT }}
 
       # enablement: true пробует включить GitHub Pages сам. Если прав не хватит,

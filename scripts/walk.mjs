@@ -10,7 +10,7 @@ import fs from 'node:fs/promises';
 import { chromium } from 'playwright';
 import sharp from 'sharp';
 
-const URL = process.argv[2] ?? 'http://localhost:4321/China2027/';
+const URL = process.argv[2] ?? 'http://localhost:4321/';
 const W = Number(process.argv[3] ?? 1440);
 const H = Number(process.argv[4] ?? 900);
 const OUT = process.argv[5] ?? `.tmp/walk-${W}`;

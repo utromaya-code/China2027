@@ -7,13 +7,13 @@ import sitemap from '@astrojs/sitemap';
  * код работал и на GitHub Pages (проектный подкаталог), и на собственном домене.
  *
  *   SITE_URL   — полный адрес сайта: canonical, OpenGraph, sitemap.
- *   BASE_PATH  — подкаталог сайта ('/China2027' на GitHub Pages или '/' на своём домене).
+ *   BASE_PATH  — подкаталог сайта ('/' на своём домене, '/China2027' — на адресе GitHub Pages).
  *
  * Пустые переменные GitHub Actions не должны перебивать рабочие значения,
  * поэтому здесь логический fallback, а не nullish coalescing.
  */
-const SITE_URL = process.env.SITE_URL?.trim() || 'https://utromaya-code.github.io';
-const BASE_PATH = process.env.BASE_PATH?.trim() || '/China2027';
+const SITE_URL = process.env.SITE_URL?.trim() || 'https://shangrila-trip.ru';
+const BASE_PATH = process.env.BASE_PATH?.trim() || '/';
 
 export default defineConfig({
   site: SITE_URL,

@@ -7,7 +7,7 @@
 import fs from 'node:fs/promises';
 import { chromium } from 'playwright';
 
-const URL = process.argv[2] ?? 'http://localhost:4321/China2027/';
+const URL = process.argv[2] ?? 'http://localhost:4321/';
 const OUT = '.tmp/shots';
 
 const VIEWPORTS = [

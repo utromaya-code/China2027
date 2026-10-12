@@ -16,7 +16,7 @@ Astro + TypeScript, статическая сборка, деплой на GitHu
 
 ```bash
 npm install
-npm run dev        # http://localhost:4321/China2027
+npm run dev        # http://localhost:4321/
 ```
 
 | Команда | Что делает |
@@ -110,22 +110,26 @@ node scripts/fetch_selected.mjs       # скачать выбранное и о�
 ## Деплой
 
 GitHub Actions собирает и публикует сайт при каждом пуше в `main`
-(`.github/workflows/deploy.yml`).
+(`.github/workflows/deploy.yml`). Адрес — **https://shangrila-trip.ru**; старая ссылка
+`utromaya-code.github.io/China2027` перенаправляет туда сама.
 
-**Включить один раз:** Settings → Pages → Source: **GitHub Actions**.
-После этого сайт живёт по адресу `https://utromaya-code.github.io/China2027/`.
+### Домен shangrila-trip.ru
 
-### Домен
+DNS у регистратора:
 
-| Переменная репозитория | По умолчанию | Для своего домена |
+| Тип | Имя | Значение |
 | --- | --- | --- |
-| `SITE_URL` | `https://utromaya-code.github.io` | `https://example.ru` |
-| `BASE_PATH` | `/China2027` | `/` |
+| A | `@` | `185.199.108.153` |
+| A | `@` | `185.199.109.153` |
+| A | `@` | `185.199.110.153` |
+| A | `@` | `185.199.111.153` |
+| CNAME | `www` | `utromaya-code.github.io.` |
 
-1. Settings → Pages → Custom domain — вписать домен;
-2. в DNS — `CNAME` на `utromaya-code.github.io`;
-3. Settings → Secrets and variables → Actions → **Variables** — задать `SITE_URL` и `BASE_PATH`;
-4. перезапустить сборку и поправить адрес карты сайта в `public/robots.txt`.
+GitHub: Settings → Pages → Custom domain — `shangrila-trip.ru`, затем галочка
+**Enforce HTTPS** (появляется, когда GitHub выпустит сертификат).
+
+Адрес сайта и базовый путь заданы в `deploy.yml` (`SITE_URL`, `BASE_PATH: /`) и
+по умолчанию в `astro.config.mjs`. Сменили домен — поправьте оба места и `public/robots.txt`.
 
 ---
 

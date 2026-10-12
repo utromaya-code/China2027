@@ -9,7 +9,7 @@
 import { chromium } from 'playwright';
 import sharp from 'sharp';
 
-const URL = process.argv[2] ?? 'http://localhost:4321/China2027/';
+const URL = process.argv[2] ?? 'http://localhost:4321/';
 const CHECKS = [
   { sel: '.hero__kicker', min: 4.5 },
   { sel: '.hero__title', min: 3 },
