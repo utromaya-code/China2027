@@ -30,7 +30,7 @@ const thumbWidths = n === 1 ? [480, 800, 1200] : n === 2 ? [320, 560, 800] : [24
     </button>
     {
       n > 0 && (
-        <ul class="day__gallery" style={`--thumbs:${n}`} aria-label="Ещё кадры этого дня">
+        <ul class="day__gallery day__gallery--side" style={`--thumbs:${n}`} aria-label="Ещё кадры этого дня">
           {thumbs.slice(0, 3).map((g) => (
             <li>
               <button class="day__zoom" type="button" data-lightbox={g.image} data-lightbox-alt={g.alt} aria-label={`Открыть фото крупно: ${g.alt}`}>
@@ -69,35 +69,129 @@ const thumbWidths = n === 1 ? [480, 800, 1200] : n === 2 ? [320, 560, 800] : [24
     </div>
 
     <div class="prose day__text reveal">
-      {day.text.map((t) => <p>{t}</p>)}
+      <p>{day.text[0]}</p>
     </div>
 
-    <ul class="day__highlights reveal" aria-label="Что увидим">
-      {day.highlights.map((h) => <li>{h}</li>)}
-    </ul>
+    <details class="day__more reveal">
+      <summary class="day__more-btn">
+        <span class="day__more-open">Подробнее о дне{day.legend && ' и легенда'}</span>
+        <span class="day__more-close">Свернуть</span>
+      </summary>
 
-    {
-      day.options && (
-        <p class="day__options reveal">
-          <span class="label">Альтернатива</span>
-          <span>{day.options.text}</span>
-        </p>
-      )
-    }
+      <div class="day__more-body">
+        {
+          n > 0 && (
+            <ul class="day__gallery day__gallery--inline" style={`--thumbs:${n}`} aria-label="Ещё кадры этого дня">
+              {thumbs.slice(0, 3).map((g) => (
+                <li>
+                  <button class="day__zoom" type="button" data-lightbox={g.image} data-lightbox-alt={g.alt} aria-label={`Открыть фото крупно: ${g.alt}`}>
+                    <Photo src={g.image} alt={g.alt} ratio={thumbRatio} sizes={thumbSizes} widths={thumbWidths} />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )
+        }
 
-    {
-      day.legend && (
-        <aside class="day__legend reveal" aria-label={`Легенда: ${day.legend.title}`}>
-          <p class="label">Легенда</p>
-          <p class="h4 day__legend-title">{day.legend.title}</p>
-          <p class="day__legend-text">{day.legend.text}</p>
-        </aside>
-      )
-    }
+        {day.text.length > 1 && <div class="prose day__text">{day.text.slice(1).map((t) => <p>{t}</p>)}</div>}
+
+        <ul class="day__highlights" aria-label="Что увидим">
+          {day.highlights.map((h) => <li>{h}</li>)}
+        </ul>
+
+        {
+          day.options && (
+            <p class="day__options">
+              <span class="label">Альтернатива</span>
+              <span>{day.options.text}</span>
+            </p>
+          )
+        }
+
+        {
+          day.legend && (
+            <aside class="day__legend" aria-label={`Легенда: ${day.legend.title}`}>
+              <p class="label">Легенда</p>
+              <p class="h4 day__legend-title">{day.legend.title}</p>
+              <p class="day__legend-text">{day.legend.text}</p>
+            </aside>
+          )
+        }
+      </div>
+    </details>
   </div>
 </article>
 
 <style>
+  /* Свёрнутая часть дня: открывается по кнопке, без скриптов */
+  .day__more {
+    margin-top: var(--space-s);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .day__more-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 3rem;
+    padding-block: 0.6rem;
+    color: var(--accent-text);
+    font-weight: 600;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .day__more-btn::-webkit-details-marker {
+    display: none;
+  }
+
+  .day__more-btn::after {
+    content: '+';
+    font-size: 1.4em;
+    line-height: 1;
+    transition: transform 0.2s ease;
+  }
+
+  .day__more[open] .day__more-btn::after {
+    transform: rotate(45deg);
+  }
+
+  .day__more-close,
+  .day__more[open] .day__more-open {
+    display: none;
+  }
+
+  .day__more[open] .day__more-close {
+    display: inline;
+  }
+
+  .day__more-body {
+    display: grid;
+    gap: var(--space-m);
+    padding-bottom: var(--space-m);
+  }
+
+  .day__more-body > :first-child {
+    margin-top: 0.4rem;
+  }
+
+  /* Миниатюры: на телефоне — внутри «Подробнее», на широком экране — под главным кадром */
+  .day__gallery.day__gallery--side {
+    display: none;
+  }
+
+  @media (min-width: 64rem) {
+    .day__gallery.day__gallery--side {
+      display: grid;
+    }
+
+    .day__gallery.day__gallery--inline {
+      display: none;
+    }
+  }
+
   .day {
     display: grid;
     gap: var(--space-l);

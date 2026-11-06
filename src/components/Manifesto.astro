@@ -68,7 +68,7 @@ const placeFor = (d: (typeof days)[number]) => d.altitudeLabel ?? d.place;
           <svg
             class:list={['altitude__svg', `altitude__svg--${c.id}`]}
             viewBox={`0 0 ${c.w} ${c.h}`}
-            role="img"
+            role="group"
             aria-label="Профиль высот маршрута: от 20 метров в Гуанчжоу до 4 506 метров у ледника Юйлун"
             style={`--fs:${c.font}px`}
           >
@@ -106,7 +106,7 @@ const placeFor = (d: (typeof days)[number]) => d.altitudeLabel ?? d.place;
               const tipX = Math.min(Math.max(p.cx - tipW / 2, 4), c.w - tipW - 4);
               const tipY = above ? p.cy - 64 : p.cy + 16;
               return (
-                <g class="altitude__pt" tabindex="0" aria-label={`День ${p.d.n}, ${p.d.dateHuman}: ${placeFor(p.d)}, ${fmt(p.d.altitude)} м`}>
+                <g class="altitude__pt" tabindex="0" role="img" aria-label={`День ${p.d.n}, ${p.d.dateHuman}: ${placeFor(p.d)}, ${fmt(p.d.altitude)} м`}>
                   <circle class="altitude__hit" cx={p.cx} cy={p.cy} r="18" />
                   <circle class="altitude__dot" cx={p.cx} cy={p.cy} r="5" />
                   {labelled && (

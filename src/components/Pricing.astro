@@ -1,5 +1,5 @@
 ---
-import { trip } from '../data/trip';
+import { trip, summary } from '../data/trip';
 import { isReady } from '../data/content';
 
 /**
@@ -50,6 +50,7 @@ const bookingNote = join([
           </p>
         )
       }
+      {isReady(tiers) && <p class="pricing__seats reveal">{summary.seats}</p>}
       {groupLines.length > 0 && <p class="pricing__note reveal">{groupLines.map((line) => <span class="pricing__line">{line}</span>)}</p>}
       {bookingNote && <p class="pricing__note reveal">{bookingNote}</p>}
       <a class="btn pricing__cta reveal" href="#zayavka" data-analytics="price_cta_click">
@@ -79,6 +80,12 @@ const bookingNote = join([
 </section>
 
 <style>
+  .pricing__seats {
+    margin-top: var(--space-s);
+    color: var(--accent-text);
+    font-weight: 600;
+  }
+
   .pricing {
     border-top: 1px solid var(--line-on-paper);
   }

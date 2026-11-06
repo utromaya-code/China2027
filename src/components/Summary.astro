@@ -1,0 +1,112 @@
+---
+import { trip, hero, summary } from '../data/trip';
+import { isReady } from '../data/content';
+
+/**
+ * «Коротко» — сразу после первого экрана: даты, маршрут, цена, места и что входит.
+ * Страница длинная, и цена раньше появлялась только в самом конце.
+ * Цифры берутся из trip.ts, места — из summary.seats (держим как на общем сайте).
+ */
+const tiers = trip.price.tiers;
+const fmt = (n: number) => `${n.toLocaleString('ru-RU').replace(/\s/g, ' ')} €`;
+const price = isReady(tiers)
+  ? `${fmt(tiers[0].amount)} ${tiers[0].label}${tiers[1] ? `, затем ${fmt(tiers[1].amount)}` : ''}`
+  : '';
+---
+
+<section class="summary section section--paper" aria-labelledby="summary-title">
+  <div class="wrap summary__grid">
+    <h2 class="h2 summary__title reveal" id="summary-title">Коротко</h2>
+
+    <dl class="summary__facts reveal">
+      <div class="summary__fact">
+        <dt class="label">Когда</dt>
+        <dd>{trip.dates.human} · {trip.dates.totalDays} дней</dd>
+      </div>
+      <div class="summary__fact">
+        <dt class="label">Маршрут</dt>
+        <dd>{hero.route}</dd>
+      </div>
+      {
+        price && (
+          <div class="summary__fact">
+            <dt class="label">Стоимость</dt>
+            <dd>{price}</dd>
+          </div>
+        )
+      }
+      <div class="summary__fact summary__fact--seats">
+        <dt class="label">Места</dt>
+        <dd>{summary.seats}</dd>
+      </div>
+      <div class="summary__fact">
+        <dt class="label">Входит</dt>
+        <dd>{summary.included}</dd>
+      </div>
+    </dl>
+
+    <div class="summary__actions reveal">
+      <a class="btn" href="#zayavka" data-analytics="summary_cta_click">{hero.cta}</a>
+      <a class="link-arrow summary__more" href="#stoimost">Стоимость и условия <span aria-hidden="true">↓</span></a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .summary {
+    padding-block: var(--space-xl);
+  }
+
+  .summary__grid {
+    display: grid;
+    gap: var(--space-m);
+  }
+
+  .summary__facts {
+    display: grid;
+    border-top: 1px solid var(--line);
+  }
+
+  .summary__fact {
+    display: grid;
+    gap: 0.25rem;
+    padding-block: 0.85rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .summary__fact dd {
+    font-size: var(--step-0);
+    line-height: 1.5;
+  }
+
+  .summary__fact--seats dd {
+    color: var(--accent-text);
+    font-weight: 600;
+  }
+
+  .summary__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 1.6rem;
+  }
+
+  @media (min-width: 48rem) {
+    .summary__fact {
+      grid-template-columns: 9rem 1fr;
+      align-items: baseline;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .summary__grid {
+      grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+      column-gap: var(--space-xl);
+      align-items: start;
+    }
+
+    .summary__actions {
+      grid-column: 2;
+    }
+  }
+</style>

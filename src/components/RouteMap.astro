@@ -24,6 +24,10 @@ function curve(map: MapShapes, points: readonly MapPoint[], seg: Segment) {
   return `M${x1.toFixed(1)} ${y1.toFixed(1)}Q${mx.toFixed(1)} ${my.toFixed(1)} ${x2.toFixed(1)} ${y2.toFixed(1)}`;
 }
 
+/** Список точек под картой — для телефона, где точки на карте слишком мелкие для пальца. */
+const dayOf = (p: MapPoint) => Number(String(p.days ?? '').match(/\d+/)?.[0] ?? 99);
+const stops = mainPoints.filter((p) => p.anchor && p.days && !p.minor).sort((a, b) => dayOf(a) - dayOf(b));
+
 function place(map: MapShapes, p: { lon: number; lat: number }) {
   const [x, y] = projectPoint(map.projection, p.lon, p.lat);
   return { x, y };
@@ -42,7 +46,7 @@ function place(map: MapShapes, p: { lon: number; lat: number }) {
       <svg
         class="map"
         viewBox={`0 0 ${mainMap.projection.width} ${mainMap.projection.height}`}
-        role="img"
+        role="group"
         aria-label="Карта южного Китая: поездом из Гуанчжоу в Яншо, самолётом из Гуйлиня в Лицзян, дальше дорогами нагорья до Шангри-Ла. Озеро Лугу — на крупном плане ниже"
       >
         <g class="map__neighbours">{mainMap.neighbours.map((n) => <path d={n.d} />)}</g>
@@ -89,6 +93,14 @@ function place(map: MapShapes, p: { lon: number; lat: number }) {
         </g>
       </svg>
 
+      <ol class="route__stops" aria-label="Точки маршрута">
+        {stops.map((p) => (
+          <li>
+            <a href={`#${p.anchor}`}><span>{p.name}</span><span class="route__stop-days">{p.days}</span></a>
+          </li>
+        ))}
+      </ol>
+
       <figcaption class="route__legend">
         <span><i class="key key--train" aria-hidden="true"></i>{routeSection.legend.train}</span>
         <span><i class="key key--flight" aria-hidden="true"></i>{routeSection.legend.flight}</span>
@@ -106,7 +118,7 @@ function place(map: MapShapes, p: { lon: number; lat: number }) {
         <svg
           class="map map--inset"
           viewBox={`0 0 ${insetMap.projection.width} ${insetMap.projection.height}`}
-          role="img"
+          role="group"
           aria-label="Крупный план северо-запада провинции Юньнань: Лицзян, ущелье Прыгающего тигра, Байшуйтай, Шангри-Ла, Сонгцзанлин, Напахай, Дабао, озеро Шуду, озеро Лугу и снежная гора Юйлун"
         >
           <g class="map__provinces">{insetMap.provinces.map((p) => <path class="is-route" d={p.d} />)}</g>
@@ -146,6 +158,41 @@ function place(map: MapShapes, p: { lon: number; lat: number }) {
 </section>
 
 <style>
+  .route__stops {
+    display: none;
+  }
+
+  @media (max-width: 47.99rem) {
+    .route__stops {
+      display: grid;
+      margin-top: var(--space-s);
+      border-top: 1px solid var(--line);
+    }
+
+    .route__stops a {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      min-height: 3rem;
+      border-bottom: 1px solid var(--line);
+      text-decoration: none;
+    }
+
+    .route__stop-days {
+      color: var(--mute);
+    }
+
+    /* Точки на карте на телефоне — только картинка, переход — по списку ниже */
+    .map__point {
+      pointer-events: none;
+    }
+
+    .map .map__point {
+      -webkit-tap-highlight-color: transparent;
+    }
+  }
+
   .route__head {
     display: grid;
     gap: var(--space-m);
