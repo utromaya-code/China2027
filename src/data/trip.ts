@@ -33,13 +33,13 @@ export const trip = {
   /** Небольшая группа — до 20 человек. Подтверждено организатором. */
   groupSize: 20 as Pending<number>,
 
-  /** Цена за участие: первые пять мест дешевле. Подтверждено организатором. */
+  /** Действующие цены за участие. */
   price: {
     tiers: [
-      { amount: 2000, label: 'для первых пяти участников' },
-      { amount: 2300, label: 'для остальных' },
+      { amount: 2200, label: 'для следующих пяти участников' },
+      { amount: 2500, label: 'для остальных участников' },
     ] as Pending<readonly PriceTier[]>,
-    currency: 'EUR',
+    currency: 'USD',
     deposit: 1000 as Pending<number>,
     /** Одноместный номер — по запросу. */
     singleSupplement: 600 as Pending<number>,
@@ -79,17 +79,21 @@ export const trip = {
   contacts: {
     telegram: 'https://t.me/vsemaya',
     telegramHandle: '@vsemaya',
+    practiceTelegram: 'https://t.me/barinov_dao',
   },
 } as const;
 
 /**
- * Блок «Коротко» после первого экрана. Места держим в одном виде с общим
- * сайтом путешествий (travel-hub, content.json → tours → china).
+ * Блок «Коротко» после первого экрана.
  */
 export const summary = {
-  seats: 'По ранней цене осталось 1 место из 5',
   included: 'Отели и завтраки, все переезды по программе, практики и сопровождение ведущих',
 } as const;
+
+export function formatTripPrice(amount: number) {
+  const currency = trip.price.currency;
+  return new Intl.NumberFormat('ru-RU', { style: 'currency', currency, maximumFractionDigits: 0 }).format(amount);
+}
 
 /** Первый экран. */
 export const hero = {

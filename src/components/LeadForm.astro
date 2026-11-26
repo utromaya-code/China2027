@@ -1,6 +1,7 @@
 ---
 import { trip } from '../data/trip';
 
+const practiceMessage = encodeURIComponent('Здравствуйте, Илья! Хочу обсудить поездку «Путь в Шангри-Ла» и договориться о коротком звонке.');
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
@@ -60,10 +61,15 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       <button class="btn btn--wide" type="submit">Отправить заявку</button>
       <p class="form__status" role="status" aria-live="polite" data-form-status></p>
 
-      <p class="form__alt">
-        Или напишите сразу в Telegram:{' '}
-        <a href={trip.contacts.telegram} rel="noopener" data-analytics="telegram_click">{trip.contacts.telegramHandle}</a>
-      </p>
+      <div class="form__alt">
+        <p>
+          Маршрут, билеты и бронь: <a href={trip.contacts.telegram} rel="noopener" data-analytics="telegram_click">написать Андрею</a>.
+        </p>
+        <p>
+          Сомневаетесь, подойдёт ли вам маршрут по нагрузке, уровню практики или самочувствию?
+          <a href={`${trip.contacts.practiceTelegram}?text=${practiceMessage}`} rel="noopener">Напишите Илье Баринову</a> и договоритесь о 10-минутном созвоне.
+        </p>
+      </div>
     </form>
   </div>
 </section>
@@ -206,6 +212,8 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   .form__status[data-tone='error'] {
     color: #f09c90;
   }
+
+  .form__alt p + p { margin-top: 0.6rem; }
 
   .form__alt {
     font-size: var(--step--1);

@@ -1,16 +1,15 @@
 ---
-import { trip, hero, summary } from '../data/trip';
+import { trip, hero, summary, formatTripPrice } from '../data/trip';
 import { isReady } from '../data/content';
 
 /**
- * «Коротко» — сразу после первого экрана: даты, маршрут, цена, места и что входит.
+ * «Коротко» — сразу после первого экрана: даты, маршрут, цена и что входит.
  * Страница длинная, и цена раньше появлялась только в самом конце.
- * Цифры берутся из trip.ts, места — из summary.seats (держим как на общем сайте).
+ * Цены берутся из trip.ts.
  */
 const tiers = trip.price.tiers;
-const fmt = (n: number) => `${n.toLocaleString('ru-RU').replace(/\s/g, ' ')} €`;
 const price = isReady(tiers)
-  ? `${fmt(tiers[0].amount)} ${tiers[0].label}${tiers[1] ? `, затем ${fmt(tiers[1].amount)}` : ''}`
+  ? `${formatTripPrice(tiers[0].amount)} ${tiers[0].label}${tiers[1] ? `, затем ${formatTripPrice(tiers[1].amount)}` : ''}`
   : '';
 ---
 
@@ -35,10 +34,6 @@ const price = isReady(tiers)
           </div>
         )
       }
-      <div class="summary__fact summary__fact--seats">
-        <dt class="label">Места</dt>
-        <dd>{summary.seats}</dd>
-      </div>
       <div class="summary__fact">
         <dt class="label">Входит</dt>
         <dd>{summary.included}</dd>
@@ -77,11 +72,6 @@ const price = isReady(tiers)
   .summary__fact dd {
     font-size: var(--step-0);
     line-height: 1.5;
-  }
-
-  .summary__fact--seats dd {
-    color: var(--accent-text);
-    font-weight: 600;
   }
 
   .summary__actions {
